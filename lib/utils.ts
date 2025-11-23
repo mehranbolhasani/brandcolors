@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { Brand, BrandColor, Collection, ColorFormat } from "./types"
+import { Brand, Collection, ColorFormat } from "./types"
+import { getPreferences, setColorFormatPref, toggleFavoritePref } from "./store"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -25,9 +26,9 @@ export function hexToHsl(hex: string): string {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (!result) return hex;
   
-  let r = parseInt(result[1], 16) / 255;
-  let g = parseInt(result[2], 16) / 255;
-  let b = parseInt(result[3], 16) / 255;
+  const r = parseInt(result[1], 16) / 255;
+  const g = parseInt(result[2], 16) / 255;
+  const b = parseInt(result[3], 16) / 255;
   
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
@@ -81,6 +82,33 @@ export function formatColor(hex: string, format: ColorFormat): string {
     default:
       return hex;
   }
+}
+
+export function hexToRgbTuple(hex: string): [number, number, number] | null {
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (!m) return null;
+  return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
+}
+
+export function getLuminance(hex: string): number {
+  const t = hexToRgbTuple(hex);
+  if (!t) return 0;
+  const [r8, g8, b8] = t;
+  const srgb = [r8, g8, b8].map(v => v / 255).map(v => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+  const [r, g, b] = srgb as [number, number, number];
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+export function isBright(hex: string): boolean {
+  return getLuminance(hex) > 0.7;
+}
+
+export function isVeryBright(hex: string): boolean {
+  return getLuminance(hex) > 0.92;
+}
+
+export function getTextColorForBackground(hex: string): string {
+  return isBright(hex) ? '#000000' : '#FFFFFF';
 }
 
 // ============================================
@@ -142,27 +170,16 @@ const STORAGE_KEYS = {
 };
 
 export function getFavorites(): string[] {
-  if (typeof window === 'undefined') return [];
-  const stored = localStorage.getItem(STORAGE_KEYS.FAVORITES);
-  return stored ? JSON.parse(stored) : [];
+  return getPreferences().favorites;
 }
 
 export function toggleFavorite(brandId: string): string[] {
-  const favorites = getFavorites();
-  const index = favorites.indexOf(brandId);
-  
-  if (index > -1) {
-    favorites.splice(index, 1);
-  } else {
-    favorites.push(brandId);
-  }
-  
-  localStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(favorites));
-  return favorites;
+  toggleFavoritePref(brandId);
+  return getPreferences().favorites;
 }
 
 export function isFavorite(brandId: string): boolean {
-  return getFavorites().includes(brandId);
+  return getPreferences().favorites.includes(brandId);
 }
 
 export function getCollections(): Collection[] {
@@ -190,13 +207,11 @@ export function deleteCollection(collectionId: string): void {
 }
 
 export function getColorFormat(): ColorFormat {
-  if (typeof window === 'undefined') return 'hex';
-  const stored = localStorage.getItem(STORAGE_KEYS.COLOR_FORMAT);
-  return (stored as ColorFormat) || 'hex';
+  return getPreferences().colorFormat;
 }
 
 export function setColorFormat(format: ColorFormat): void {
-  localStorage.setItem(STORAGE_KEYS.COLOR_FORMAT, format);
+  setColorFormatPref(format);
 }
 
 // ============================================
@@ -211,7 +226,7 @@ export function exportAsCSS(brands: Brand[]): string {
   let css = ':root {\n';
   
   brands.forEach(brand => {
-    brand.colors.forEach((color, index) => {
+    brand.colors.forEach((color) => {
       const varName = `--${brand.id}-${color.name.toLowerCase().replace(/\s+/g, '-')}`;
       css += `  ${varName}: ${color.hex};\n`;
     });
@@ -222,7 +237,7 @@ export function exportAsCSS(brands: Brand[]): string {
 }
 
 export function exportAsTailwind(brands: Brand[]): string {
-  const colors: Record<string, any> = {};
+  const colors: Record<string, Record<string, string>> = {};
   
   brands.forEach(brand => {
     const brandColors: Record<string, string> = {};

@@ -2,16 +2,32 @@
 
 import { brands, categories } from '@/lib/brands-data';
 import { Brand, ColorFormat } from '@/lib/types';
-import { searchBrands, filterByCategory, getColorFormat, setColorFormat, getFavorites } from '@/lib/utils';
-import { BrandCard } from '@/components/brand-card';
+import { setColorFormat } from '@/lib/utils';
+import { usePreferences } from '@/lib/store';
+import dynamic from 'next/dynamic';
+import { BrandRowList, BrandRowCompact } from '@/components/brand-row';
 import { ColorFormatSelector } from '@/components/color-format-selector';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, FolderOpen } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { Search, FolderOpen, LayoutGrid, LayoutList, List } from 'lucide-react';
+import { useState, useEffect, useRef, useMemo, useDeferredValue, useLayoutEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
+import { exportAsJSON, exportAsCSS, exportAsTailwind, exportAsSVG, downloadFile } from '@/lib/utils';
+
+const LazyBrandCard = dynamic(() => import('@/components/brand-card').then(m => m.BrandCard), {
+  ssr: false,
+  loading: () => <div className="glass rounded-3xl h-80" />,
+});
 
 // Register GSAP plugins
 if (typeof window !== 'undefined') {
@@ -21,23 +37,40 @@ if (typeof window !== 'undefined') {
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [colorFormat, setColorFormatState] = useState<ColorFormat>('hex');
-  const [filteredBrands, setFilteredBrands] = useState<Brand[]>(brands);
-  const [mounted, setMounted] = useState(false);
+  const { colorFormat, favorites, layout, setColorFormat: setColorFormatPref, setLayout } = usePreferences();
+  const deferredQuery = useDeferredValue(searchQuery);
   const headerRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const categoriesRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    setMounted(true);
-    const savedFormat = getColorFormat();
-    setColorFormatState(savedFormat);
-  }, []);
+  const filteredBrands = useMemo<Brand[]>(() => {
+    let result: Brand[] = brands;
+    if (selectedCategory === 'Favorites') {
+      result = result.filter(brand => favorites.includes(brand.id));
+    } else if (selectedCategory && selectedCategory !== 'All') {
+      result = result.filter(brand => brand.category === selectedCategory);
+    }
+    if (deferredQuery.trim()) {
+      const lowerQuery = deferredQuery.toLowerCase();
+      result = result.filter(brand =>
+        brand.name.toLowerCase().includes(lowerQuery) ||
+        brand.category.toLowerCase().includes(lowerQuery) ||
+        brand.tags?.some(tag => tag.toLowerCase().includes(lowerQuery))
+      );
+    }
+    return result;
+  }, [deferredQuery, selectedCategory, favorites]);
+
+  useLayoutEffect(() => {
+    // Container-level animation no longer needed; handled per-item for reliable stagger
+  }, [filteredBrands, layout]);
 
   // GSAP ScrollTrigger for smooth sticky header animations
   useEffect(() => {
-    if (!mounted || !headerRef.current || !searchRef.current || !categoriesRef.current || !sentinelRef.current) return;
+    if (!headerRef.current || !searchRef.current || !categoriesRef.current || !sentinelRef.current) return;
 
     const ctx = gsap.context(() => {
       // Use sentinel element to avoid trigger position changes during animation
@@ -93,54 +126,24 @@ export default function Home() {
     });
 
     return () => {
-      ctx.revert(); // Clean up GSAP animations
+      ctx.revert();
     };
-  }, [mounted]);
-
-  useEffect(() => {
-    if (!mounted) return;
-    
-    let result = [...brands]; // Create a new array to avoid mutation
-    
-    // Apply category filter first
-    if (selectedCategory === 'Favorites') {
-      const favorites = getFavorites();
-      result = result.filter(brand => favorites.includes(brand.id));
-    } else if (selectedCategory && selectedCategory !== 'All') {
-      result = result.filter(brand => brand.category === selectedCategory);
-    }
-    
-    // Then apply search
-    if (searchQuery.trim()) {
-      const lowerQuery = searchQuery.toLowerCase();
-      result = result.filter(brand =>
-        brand.name.toLowerCase().includes(lowerQuery) ||
-        brand.category.toLowerCase().includes(lowerQuery) ||
-        brand.tags?.some(tag => tag.toLowerCase().includes(lowerQuery))
-      );
-    }
-    
-    setFilteredBrands(result);
-  }, [searchQuery, selectedCategory, mounted]);
+  }, []);
 
   const handleFormatChange = (format: ColorFormat) => {
-    setColorFormatState(format);
+    setColorFormatPref(format);
     setColorFormat(format);
   };
 
-  if (!mounted) {
-    return null;
-  }
-
   return (
-    <div className="min-h-screen bg-background w-3xl mx-auto relative">
+    <div className="min-h-screen bg-background w-3xl mx-auto relative selection:bg-primary selection:text-primary-foreground">
       {/* Sentinel element for ScrollTrigger - positioned where header starts */}
       <div ref={sentinelRef} className="absolute top-12 left-0 w-full h-px pointer-events-none" aria-hidden="true" />
       
       {/* Header */}
       <header 
         ref={headerRef}
-        className="sticky top-2 mt-12 z-50 w-full rounded-xl glass shadow-sm shadow-neutral-900/5 overflow-hidden transition-shadow duration-300"
+        className="sticky top-2 mt-4 z-50 w-full rounded-xl glass shadow-sm shadow-neutral-900/5 overflow-hidden transition-shadow duration-300"
       >
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
@@ -149,10 +152,52 @@ export default function Home() {
               <h1 className="text-lg font-medium tracking-tight transition-smooth">Brand×Colors · Directory</h1>
             </div>
             
-            <div className="flex items-center gap-3">
-              <ColorFormatSelector value={colorFormat} onChange={handleFormatChange} />
-              <ThemeToggle />
-            </div>
+          <div className="flex items-center gap-3">
+            <ColorFormatSelector value={colorFormat} onChange={handleFormatChange} />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-9 px-3 gap-2">
+                  <Download className="h-4 w-4" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onSelect={() => {
+                    const content = exportAsJSON(filteredBrands);
+                    downloadFile(content, 'brandcolors.json', 'application/json');
+                  }}
+                >
+                  Download JSON
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    const content = exportAsCSS(filteredBrands);
+                    downloadFile(content, 'brandcolors.css', 'text/css');
+                  }}
+                >
+                  Download CSS Variables
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    const content = exportAsTailwind(filteredBrands);
+                    downloadFile(content, 'brandcolors.tailwind.js', 'text/plain');
+                  }}
+                >
+                  Download Tailwind Theme
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    const content = exportAsSVG(filteredBrands);
+                    downloadFile(content, 'brandcolors.svg', 'image/svg+xml');
+                  }}
+                >
+                  Download SVG Swatches
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <ThemeToggle />
+          </div>
           </div>
           
           {/* Search */}
@@ -199,6 +244,22 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container mx-auto px-2 py-8">
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Showing {filteredBrands.length} {filteredBrands.length === 1 ? 'brand' : 'brands'}
+          </p>
+          <div className="flex items-center gap-0 rounded-md border border-slate-300 overflow-hidden">
+            <Button variant={layout === 'grid' ? 'default' : 'outline'} size="sm" onClick={() => setLayout('grid')} className="rounded-none">
+              <LayoutGrid className="h-4 w-4" />
+            </Button>
+            <Button variant={layout === 'list' ? 'default' : 'outline'} size="sm" onClick={() => setLayout('list')} className="rounded-none">
+              <LayoutList className="h-4 w-4" />
+            </Button>
+            <Button variant={layout === 'compact' ? 'default' : 'outline'} size="sm" onClick={() => setLayout('compact')} className="rounded-none">
+              <List className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
         {filteredBrands.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-lg text-muted-foreground">No brands found</p>
@@ -208,14 +269,23 @@ export default function Home() {
           </div>
         ) : (
           <>
-            <p className="text-sm text-muted-foreground mb-6">
-              Showing {filteredBrands.length} {filteredBrands.length === 1 ? 'brand' : 'brands'}
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-              {filteredBrands.map((brand) => (
-                <BrandCard key={brand.id} brand={brand} colorFormat={colorFormat} />
-              ))}
-            </div>
+            {layout === 'grid' ? (
+              <div key={layout} ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                {filteredBrands.map((brand, idx) => (
+                  <LazyBrandCard key={brand.id} brand={brand} colorFormat={colorFormat} layout={layout} appearIndex={idx} />
+                ))}
+              </div>
+            ) : (
+              <div key={layout} ref={listRef} className="grid grid-cols-1 gap-0">
+                {layout === 'list'
+                  ? filteredBrands.map((brand, idx) => (
+                      <BrandRowList key={brand.id} brand={brand} colorFormat={colorFormat} appearIndex={idx} />
+                    ))
+                  : filteredBrands.map((brand, idx) => (
+                      <BrandRowCompact key={brand.id} brand={brand} colorFormat={colorFormat} appearIndex={idx} />
+                    ))}
+              </div>
+            )}
           </>
         )}
       </main>

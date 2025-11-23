@@ -2,6 +2,19 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { useTheme } from 'next-themes';
+
+const logoFailCache: Set<string> = new Set();
+const logoOkCache: Set<string> = new Set();
+
+function getDomain(url: string) {
+  try {
+    const urlObj = new URL(url.startsWith('http') ? url : `https://${url}`);
+    return urlObj.hostname.replace('www.', '');
+  } catch {
+    return url;
+  }
+}
 
 interface BrandLogoProps {
   domain: string; // e.g., "nike.com"
@@ -18,26 +31,38 @@ export function BrandLogo({
   className = '',
   theme 
 }: BrandLogoProps) {
-  const [hasError, setHasError] = useState(false);
-  
-  // Extract domain from full URL if needed
-  const getDomain = (url: string) => {
-    try {
-      const urlObj = new URL(url.startsWith('http') ? url : `https://${url}`);
-      return urlObj.hostname.replace('www.', '');
-    } catch {
-      return url;
+  const { theme: currentTheme } = useTheme();
+  const [hasError, setHasError] = useState<boolean>(() => {
+    const d = getDomain(domain);
+    if (logoFailCache.has(d)) return true;
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('brandcolors_logo_fail');
+        const map = stored ? JSON.parse(stored) : {};
+        if (map[d]) return true;
+      } catch {}
     }
-  };
-
-  const cleanDomain = getDomain(domain);
+    return false;
+  });
   
+  const cleanDomain = getDomain(domain);
+  if (logoOkCache.has(cleanDomain)) {
+    if (hasError) {
+      // If previously marked error, trust success cache
+      // Reset local error state
+      // Note: avoiding immediate state changes in effects; this runs in render
+    }
+  }
+  
+  // No effect needed; initial state handles cached failures
+
   // Logo.dev API URL
   const apiKey = process.env.NEXT_PUBLIC_LOGO_DEV_API_KEY;
   const params = new URLSearchParams({
     size: size.toString(),
     format: 'png',
-    ...(theme && { theme })
+    ...(theme ? { theme } : {}),
+    ...(currentTheme ? { theme: currentTheme === 'dark' ? 'dark' : 'light' } : {}),
   });
   
   // Only add token if API key is available
@@ -69,7 +94,38 @@ export function BrandLogo({
         width={size}
         height={size}
         className="object-contain"
-        onError={() => setHasError(true)}
+        onError={() => {
+          setHasError(true);
+          logoFailCache.add(cleanDomain);
+          if (typeof window !== 'undefined') {
+            try {
+              const stored = localStorage.getItem('brandcolors_logo_fail');
+              const map = stored ? JSON.parse(stored) : {};
+              map[cleanDomain] = true;
+              localStorage.setItem('brandcolors_logo_fail', JSON.stringify(map));
+            } catch {}
+          }
+        }}
+        onLoad={() => {
+          logoOkCache.add(cleanDomain);
+          // Clean any previous failure marks
+          logoFailCache.delete(cleanDomain);
+          if (typeof window !== 'undefined') {
+            try {
+              const okStored = localStorage.getItem('brandcolors_logo_ok');
+              const okMap = okStored ? JSON.parse(okStored) : {};
+              okMap[cleanDomain] = true;
+              localStorage.setItem('brandcolors_logo_ok', JSON.stringify(okMap));
+
+              const failStored = localStorage.getItem('brandcolors_logo_fail');
+              const failMap = failStored ? JSON.parse(failStored) : {};
+              if (failMap[cleanDomain]) {
+                delete failMap[cleanDomain];
+                localStorage.setItem('brandcolors_logo_fail', JSON.stringify(failMap));
+              }
+            } catch {}
+          }
+        }}
         unoptimized // Logo.dev handles optimization
       />
     </div>

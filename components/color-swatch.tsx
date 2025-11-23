@@ -1,7 +1,7 @@
 'use client';
 
 import { BrandColor, ColorFormat } from '@/lib/types';
-import { formatColor, copyToClipboard } from '@/lib/utils';
+import { formatColor, copyToClipboard, getTextColorForBackground, isVeryBright } from '@/lib/utils';
 import { Check, Copy } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -11,11 +11,14 @@ interface ColorSwatchProps {
   color: BrandColor;
   format: ColorFormat;
   brandName: string;
+  variant?: 'default' | 'compact';
 }
 
-export function ColorSwatch({ color, format, brandName }: ColorSwatchProps) {
+export function ColorSwatch({ color, format, brandName, variant = 'default' }: ColorSwatchProps) {
   const [copied, setCopied] = useState(false);
   const formattedColor = formatColor(color.hex, format);
+  const textColor = getTextColorForBackground(color.hex);
+  const veryBright = isVeryBright(color.hex);
 
   const handleCopy = async () => {
     const success = await copyToClipboard(formattedColor);
@@ -36,23 +39,29 @@ export function ColorSwatch({ color, format, brandName }: ColorSwatchProps) {
         <TooltipTrigger asChild>
           <button
             onClick={handleCopy}
-            className="group relative flex flex-col items-center gap-2 px-4 hover:bg-muted/50 transition-smooth flex-1" style={{ backgroundColor: color.hex }}
+            className={variant === 'compact' ? 'group relative flex items-center justify-center h-12 w-20 rounded-md transition-smooth' : 'group relative flex flex-col items-center gap-2 px-4 hover:bg-muted/50 transition-smooth flex-1 justify-end'} style={{ backgroundColor: color.hex, color: textColor, border: veryBright ? '1px solid rgba(0,0,0,0.1)' : undefined }}
           >
-            <div className="flex flex-col items-start justify-between w-full mt-4">
-              {color.name && (
-                <span className="text-base font-medium text-white">
+            {variant === 'compact' ? (
+              <span className="text-[10px] font-mono text-white px-1 py-0.5 rounded bg-black/20">
+                {formattedColor}
+              </span>
+            ) : (
+              <div className="flex flex-col items-start justify-end w-full mb-4">
+                {/* {color.name && (
+                <span className="text-base font-medium">
                   {color.name}
                 </span>
-              )}
-              <span className="text-sm font-mono text-white flex items-center gap-1 tracking-tighter">
-                {formattedColor}
-                {copied ? (
-                  <Check className="h-3 w-3 text-green-500" />
-                ) : (
-                  <Copy className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                )}
-              </span>
-            </div>
+              )} */}
+                <span className="text-sm font-mono flex items-center gap-1 tracking-tighter">
+                  {formattedColor}
+                  {copied ? (
+                    <Check className="h-3 w-3 text-green-500" />
+                  ) : (
+                    <Copy className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  )}
+                </span>
+              </div>
+            )}
           </button>
         </TooltipTrigger>
         <TooltipContent>

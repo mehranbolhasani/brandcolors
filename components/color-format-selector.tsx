@@ -2,8 +2,6 @@
 
 import { ColorFormat } from '@/lib/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { getColorFormat, setColorFormat } from '@/lib/utils';
-import { useEffect, useState } from 'react';
 
 interface ColorFormatSelectorProps {
   value: ColorFormat;

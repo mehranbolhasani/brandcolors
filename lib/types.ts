@@ -25,9 +25,12 @@ export interface Collection {
 
 export type ColorFormat = "hex" | "rgb" | "hsl" | "oklch";
 
+export type LayoutMode = "grid" | "list" | "compact";
+
 export interface UserPreferences {
   colorFormat: ColorFormat;
   theme: "light" | "dark" | "system";
   favorites: string[]; // Array of brand IDs
   collections: Collection[];
+  layout?: LayoutMode;
 }
