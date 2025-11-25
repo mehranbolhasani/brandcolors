@@ -1,8 +1,10 @@
+
 'use client';
 
-import { brands, categories } from '@/lib/brands-data';
+import { brands as staticBrands } from '@/lib/brands-data';
 import { Brand, ColorFormat } from '@/lib/types';
-import { setColorFormat } from '@/lib/utils';
+import { setColorFormat, getRuntimeBrands, validateBrands, normalizeBrand, saveRuntimeBrands, clearRuntimeBrands, fetchBrandsFromUrl } from '@/lib/utils';
+import { getSupabase } from '@/lib/supabase';
 import { usePreferences } from '@/lib/store';
 import dynamic from 'next/dynamic';
 import { BrandRowList, BrandRowCompact } from '@/components/brand-row';
@@ -11,7 +13,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, FolderOpen, LayoutGrid, LayoutList, List } from 'lucide-react';
-import { useState, useEffect, useRef, useMemo, useDeferredValue, useLayoutEffect } from 'react';
+import { useState, useEffect, useRef, useMemo, useDeferredValue, useLayoutEffect, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
@@ -23,9 +25,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { exportAsJSON, exportAsCSS, exportAsTailwind, exportAsSVG, downloadFile } from '@/lib/utils';
+import { toast } from 'sonner';
 
 const LazyBrandCard = dynamic(() => import('@/components/brand-card').then(m => m.BrandCard), {
-  ssr: false,
   loading: () => <div className="glass rounded-3xl h-80" />,
 });
 
@@ -45,9 +47,41 @@ export default function Home() {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const fetchedOnceRef = useRef(false);
+
+  const [dataBrands, setDataBrands] = useState<Brand[]>(() => {
+    const rb = getRuntimeBrands();
+    return rb.length ? rb : staticBrands;
+  });
+  const supabase = getSupabase();
+  const [mounted, setMounted] = useState(false);
+
+  const categories = useMemo<string[]>(() => {
+    const set = new Set<string>();
+    for (const b of dataBrands) set.add(b.category);
+    return Array.from(set);
+  }, [dataBrands]);
+
+  const refreshFromRemote = async () => {
+    const url = process.env.NEXT_PUBLIC_BRANDS_URL;
+    if (!url) {
+      toast.error('Remote URL not configured');
+      return;
+    }
+    try {
+      const remote = await fetchBrandsFromUrl(url);
+      saveRuntimeBrands(remote);
+      setDataBrands(remote);
+      setSelectedCategory(null);
+      toast.success('Fetched remote brands', { description: `${remote.length} brands` });
+    } catch {
+      toast.error('Failed to fetch remote brands');
+    }
+  };
 
   const filteredBrands = useMemo<Brand[]>(() => {
-    let result: Brand[] = brands;
+    let result: Brand[] = dataBrands;
     if (selectedCategory === 'Favorites') {
       result = result.filter(brand => favorites.includes(brand.id));
     } else if (selectedCategory && selectedCategory !== 'All') {
@@ -62,7 +96,43 @@ export default function Home() {
       );
     }
     return result;
-  }, [deferredQuery, selectedCategory, favorites]);
+  }, [deferredQuery, selectedCategory, favorites, dataBrands]);
+
+  const loadFromSupabase = useCallback(async () => {
+    if (!supabase) {
+      toast.error('Supabase not configured');
+      return;
+    }
+    try {
+      const { data, error } = await supabase.from('brands').select('id,name,category,website,colors(name,hex)').order('name');
+      if (error) throw error;
+      const list = (data ?? []).map((d: unknown) => {
+        const row = d as { id: string; name: string; category: string; website?: string; colors?: { name: string; hex: string }[] };
+        return { id: row.id, name: row.name, category: row.category, website: row.website, colors: row.colors ?? [] };
+      }) as Brand[];
+      if (list.length > 0) {
+        saveRuntimeBrands(list);
+        setDataBrands(list);
+        setSelectedCategory(null);
+        toast.success('Loaded brands from Supabase', { description: `${list.length} brands` });
+      } else {
+        toast.info('No brands in Supabase; showing local dataset');
+      }
+    } catch {
+      toast.error('Failed to load from Supabase');
+    }
+  }, [supabase]);
+
+  useEffect(() => {
+    if (supabase && !fetchedOnceRef.current) {
+      fetchedOnceRef.current = true;
+      void loadFromSupabase();
+    }
+  }, [supabase, loadFromSupabase]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useLayoutEffect(() => {
     // Container-level animation no longer needed; handled per-item for reliable stagger
@@ -73,6 +143,8 @@ export default function Home() {
     if (!headerRef.current || !searchRef.current || !categoriesRef.current || !sentinelRef.current) return;
 
     const ctx = gsap.context(() => {
+      const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduced) return;
       // Use sentinel element to avoid trigger position changes during animation
       ScrollTrigger.create({
         trigger: sentinelRef.current,
@@ -83,16 +155,16 @@ export default function Home() {
         onEnter: () => {
           // Kill any existing animations to prevent conflicts
           gsap.killTweensOf([headerRef.current, searchRef.current, categoriesRef.current]);
-          
+
           // Animate to stuck state
           gsap.to(headerRef.current, {
-            height: '4rem', // h-16
-            boxShadow: '0 15px 25px -12px rgb(0 0 0 / 0.05)',
+            height: '4rem',
             duration: 0.3,
             ease: 'power2.out',
             overwrite: 'auto'
           });
-          
+          if (headerRef.current) headerRef.current.classList.add('is-stuck');
+
           // Fade out search and categories
           gsap.to([searchRef.current, categoriesRef.current], {
             opacity: 0,
@@ -104,16 +176,16 @@ export default function Home() {
         onLeaveBack: () => {
           // Kill any existing animations to prevent conflicts
           gsap.killTweensOf([headerRef.current, searchRef.current, categoriesRef.current]);
-          
+
           // Animate back to normal state - clear inline styles to let CSS take over
           gsap.to(headerRef.current, {
             height: 'auto',
-            clearProps: 'boxShadow', // Remove inline boxShadow to use CSS class
             duration: 0.3,
             ease: 'power2.out',
             overwrite: 'auto'
           });
-          
+          if (headerRef.current) headerRef.current.classList.remove('is-stuck');
+
           // Fade in search and categories
           gsap.to([searchRef.current, categoriesRef.current], {
             opacity: 1,
@@ -136,15 +208,16 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background w-3xl mx-auto relative selection:bg-primary selection:text-primary-foreground">
+    <div className="min-h-screen bg-background max-w-4xl w-full mx-auto relative selection:bg-primary selection:text-primary-foreground">
       {/* Sentinel element for ScrollTrigger - positioned where header starts */}
       <div ref={sentinelRef} className="absolute top-12 left-0 w-full h-px pointer-events-none" aria-hidden="true" />
       
       {/* Header */}
-      <header 
-        ref={headerRef}
-        className="sticky top-2 mt-4 z-50 w-full rounded-xl glass shadow-sm shadow-neutral-900/5 overflow-hidden transition-shadow duration-300"
-      >
+        <header
+          ref={headerRef}
+          className="sticky top-2 mt-4 z-50 w-full rounded-xl glass shadow-sm shadow-neutral-900/5 overflow-hidden transition-shadow duration-300"
+          suppressHydrationWarning
+        >
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
@@ -181,7 +254,7 @@ export default function Home() {
                 <DropdownMenuItem
                   onSelect={() => {
                     const content = exportAsTailwind(filteredBrands);
-                    downloadFile(content, 'brandcolors.tailwind.js', 'text/plain');
+                    downloadFile(content, 'brandcolors.tailwind.js', 'application/javascript');
                   }}
                 >
                   Download Tailwind Theme
@@ -194,12 +267,61 @@ export default function Home() {
                 >
                   Download SVG Swatches
                 </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => fileRef.current?.click()}
+                >
+                  Import JSON
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={loadFromSupabase}
+                >
+                  Refresh from Supabase
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={refreshFromRemote}
+                >
+                  Refresh from Remote
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    clearRuntimeBrands();
+                    setDataBrands(staticBrands);
+                    setSelectedCategory(null);
+                    toast.success('Reset to default brands');
+                  }}
+                >
+                  Reset to Defaults
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             <ThemeToggle />
           </div>
           </div>
-          
+
+          <input
+            ref={fileRef}
+            type="file"
+            accept="application/json"
+            className="hidden"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              try {
+                const text = await file.text();
+                const parsed = JSON.parse(text);
+                if (!validateBrands(parsed)) throw new Error('Invalid format');
+                const normalized = parsed.map((b: Brand) => normalizeBrand(b));
+                saveRuntimeBrands(normalized);
+                setDataBrands(normalized);
+                setSelectedCategory(null);
+                toast.success('Imported brands', { description: `${normalized.length} brands` });
+              } catch {
+                toast.error('Failed to import brands');
+              } finally {
+                e.target.value = '';
+              }
+            }}
+          />
           {/* Search */}
           <div ref={searchRef} className="mt-4 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -209,44 +331,51 @@ export default function Home() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 h-11"
+              aria-label="Search brands"
             />
           </div>
           
           {/* Category Filters */}
-          <div ref={categoriesRef} className="mt-4 flex flex-wrap gap-2">
-            <Badge
-              variant={selectedCategory === null ? 'default' : 'outline'}
-              className="cursor-pointer transition-smooth"
-              onClick={() => setSelectedCategory(null)}
-            >
-              All
-            </Badge>
-            {categories.map((category) => (
+          {mounted && (
+            <div ref={categoriesRef} className="mt-4 flex flex-wrap gap-2">
               <Badge
-                key={category}
-                variant={selectedCategory === category ? 'default' : 'outline'}
-                className="cursor-pointer transition-smooth"
-                onClick={() => setSelectedCategory(category)}
+                asChild
+                variant={selectedCategory === null ? 'default' : 'outline'}
+                className="transition-smooth"
               >
-                {category}
+                <button type="button" onClick={() => setSelectedCategory(null)}>All</button>
               </Badge>
-            ))}
-            <Badge
-              variant={selectedCategory === 'Favorites' ? 'default' : 'outline'}
-              className="cursor-pointer transition-smooth"
-              onClick={() => setSelectedCategory('Favorites')}
-            >
-              ❤️ Favorites
-            </Badge>
-          </div>
+              {categories.map((category) => (
+                <Badge
+                  asChild
+                  key={category}
+                  variant={selectedCategory === category ? 'default' : 'outline'}
+                  className="transition-smooth"
+                >
+                  <button type="button" onClick={() => setSelectedCategory(category)}>{category}</button>
+                </Badge>
+              ))}
+              <Badge
+                asChild
+                variant={selectedCategory === 'Favorites' ? 'default' : 'outline'}
+                className="transition-smooth"
+              >
+                <button type="button" onClick={() => setSelectedCategory('Favorites')}>❤️ Favorites</button>
+              </Badge>
+            </div>
+          )}
         </div>
       </header>
 
       {/* Main Content */}
       <main className="container mx-auto px-2 py-8">
         <div className="mb-4 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Showing {filteredBrands.length} {filteredBrands.length === 1 ? 'brand' : 'brands'}
+          <p className="text-sm text-muted-foreground" aria-live="polite" suppressHydrationWarning>
+            {mounted ? (
+              <>Showing {filteredBrands.length} {filteredBrands.length === 1 ? 'brand' : 'brands'}</>
+            ) : (
+              <>Loading…</>
+            )}
           </p>
           <div className="flex items-center gap-0 rounded-md border border-slate-300 overflow-hidden">
             <Button variant={layout === 'grid' ? 'default' : 'outline'} size="sm" onClick={() => setLayout('grid')} className="rounded-none">
@@ -294,7 +423,7 @@ export default function Home() {
       <footer className="border-t glass mt-20">
         <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
           <p>A curated library of official brand colors</p>
-          <p className="mt-1">{brands.length} brands • Multiple color formats • Open source</p>
+          <p className="mt-1">{dataBrands.length} brands • Multiple color formats • Open source</p>
         </div>
       </footer>
     </div>

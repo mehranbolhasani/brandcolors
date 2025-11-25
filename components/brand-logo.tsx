@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { useTheme } from 'next-themes';
 
 const logoFailCache: Set<string> = new Set();
 const logoOkCache: Set<string> = new Set();
@@ -31,7 +30,7 @@ export function BrandLogo({
   className = '',
   theme 
 }: BrandLogoProps) {
-  const { theme: currentTheme } = useTheme();
+  
   const [hasError, setHasError] = useState<boolean>(() => {
     const d = getDomain(domain);
     if (logoFailCache.has(d)) return true;
@@ -62,7 +61,6 @@ export function BrandLogo({
     size: size.toString(),
     format: 'png',
     ...(theme ? { theme } : {}),
-    ...(currentTheme ? { theme: currentTheme === 'dark' ? 'dark' : 'light' } : {}),
   });
   
   // Only add token if API key is available
@@ -87,7 +85,7 @@ export function BrandLogo({
   }
 
   return (
-    <div className={`relative ${className}`} style={{ width: size, height: size }}>
+    <div className={`relative ${className}`} style={{ width: size, height: size }} suppressHydrationWarning>
       <Image
         src={logoUrl}
         alt={`${brandName} logo`}
