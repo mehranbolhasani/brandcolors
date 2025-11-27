@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
+import { FolderOpen, LogOut, Plus, Import, RefreshCw } from 'lucide-react';
 
 type ColorInput = { name: string; hex: string; rgb?: string; hsl?: string; oklch?: string }
 type CRow = { brand_id: string; name: string; hex: string; rgb?: string; hsl?: string; oklch?: string }
@@ -173,15 +174,20 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="container mx-auto px-4 py-8 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Admin</h1>
+    <main className="max-w-5xl mx-auto px-4 py-8 space-y-6">
+      <div className="flex items-center justify-between h-24">
+        <div className="flex items-center gap-3">
+          <FolderOpen className="h-10 w-10 transition-smooth" />
+          <h1 className="text-lg font-medium tracking-tight transition-smooth flex flex-col">
+            <span>Brand×Colors · Directory</span>
+            <span className="text-sm text-muted-foreground">Admin</span>
+          </h1>
+        </div>
         <div className="flex items-center gap-2">
-          <Input placeholder="email" value={userEmail} onChange={e => setUserEmail(e.target.value)} className="w-64" />
-          <Button variant="outline" onClick={signInWithEmail}>Magic Link</Button>
-          <Button variant="outline" onClick={() => signInWithProvider('github')}>GitHub</Button>
-          <Button variant="outline" onClick={() => signInWithProvider('google')}>Google</Button>
-          {user ? <Button onClick={() => { signOut(); router.replace('/login') }}>Sign Out</Button> : null}
+          {user ? <Button variant="outline" onClick={() => { signOut(); router.replace('/login') }}>
+            <LogOut className="h-4 w-4" />
+            Sign Out
+            </Button> : null}
         </div>
       </div>
 
@@ -192,7 +198,10 @@ export default function AdminPage() {
       <div className="flex items-center gap-2">
         <Dialog open={openId === 'new'} onOpenChange={o => setOpenId(o ? 'new' : null)}>
           <DialogTrigger asChild>
-            <Button disabled={!user}>Add Brand</Button>
+            <Button disabled={!user}>
+              <Plus className="h-4 w-4" />
+              Add Brand
+            </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -207,8 +216,14 @@ export default function AdminPage() {
           if (f) importJson(f)
           e.currentTarget.value = ''
         }} />
-        <Button variant="outline" onClick={() => fileRef.current?.click()} disabled={!user}>Import JSON</Button>
-        <Button variant="outline" onClick={loadBrands}>Refresh</Button>
+        <Button variant="outline" onClick={() => fileRef.current?.click()} disabled={!user}>
+          <Import className="h-4 w-4" />
+          Import JSON
+        </Button>
+        <Button variant="outline" onClick={loadBrands}>
+          <RefreshCw className="h-4 w-4" />
+          Refresh
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

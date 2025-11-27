@@ -45,15 +45,17 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="container mx-auto px-4 py-24 max-w-md" aria-busy={!authReady}>
-      <h1 className="text-xl font-semibold">Sign in</h1>
-      <p className="text-sm text-muted-foreground mt-1">Access the admin dashboard.</p>
-      <div className="mt-6 space-y-3">
-        <Input placeholder="email" value={email} onChange={e => setEmail(e.target.value)} />
-        <Button disabled={!authReady || !email || loading} onClick={magic}>{loading ? 'Sending…' : 'Magic Link'}</Button>
-        <div className="flex gap-2">
-          <Button variant="outline" disabled={!authReady} onClick={() => oauth('github')}>GitHub</Button>
-          <Button variant="outline" disabled={!authReady} onClick={() => oauth('google')}>Google</Button>
+    <main className="w-screen h-screen flex items-center justify-center" aria-busy={!authReady}>
+      <div>
+        <h1 className="text-xl font-semibold">Sign in</h1>
+        <p className="text-sm text-muted-foreground mt-1">Access the admin dashboard.</p>
+        <div className="mt-6 space-y-3">
+          <Input placeholder="email" value={email} onChange={e => setEmail(e.target.value)} />
+          <Button disabled={!authReady || !email || loading} onClick={magic}>{loading ? 'Sending…' : 'Magic Link'}</Button>
+          <div className="flex gap-2">
+            <Button variant="outline" disabled={!authReady} onClick={() => oauth('github')}>GitHub</Button>
+            <Button variant="outline" disabled={!authReady} onClick={() => oauth('google')}>Google</Button>
+          </div>
         </div>
       </div>
     </main>
