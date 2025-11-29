@@ -3,59 +3,70 @@
 
 import { brands as staticBrands } from '@/lib/brands-data';
 import { Brand, ColorFormat } from '@/lib/types';
-import { setColorFormat, getRuntimeBrands, validateBrands, normalizeBrand, saveRuntimeBrands, clearRuntimeBrands, fetchBrandsFromUrl } from '@/lib/utils';
+import { getRuntimeBrands, saveRuntimeBrands, fetchBrandsFromUrl } from '@/lib/utils';
 import { getSupabase } from '@/lib/supabase';
 import { usePreferences } from '@/lib/store';
 import dynamic from 'next/dynamic';
 import { BrandRowList, BrandRowCompact } from '@/components/brand-row';
-import { ColorFormatSelector } from '@/components/color-format-selector';
-import { ThemeToggle } from '@/components/theme-toggle';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, FolderOpen, LayoutGrid, LayoutList, List } from 'lucide-react';
-import { useState, useEffect, useRef, useMemo, useDeferredValue, useLayoutEffect, useCallback } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
+import { Search, LayoutGrid, LayoutList, List, ChevronLeft, ChevronRight, ArrowUpDown } from 'lucide-react';
+import { SiteHeader } from '@/components/site-header';
+import { HeroSection } from '@/components/hero-section';
+import { useState, useEffect, useRef, useMemo, useDeferredValue, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
-import { exportAsJSON, exportAsCSS, exportAsTailwind, exportAsSVG, downloadFile } from '@/lib/utils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+
+import ColorBends from '@/components/ColorBends';
+import { MetaLogoIcon, AmazonLogoIcon, GoogleLogoIcon, TiktokLogoIcon, SketchLogoIcon, InstagramLogoIcon, YoutubeLogoIcon, LinkedinLogoIcon, SlackLogoIcon, AppleLogoIcon, LinuxLogoIcon, LinktreeLogoIcon, MastodonLogoIcon, SpotifyLogoIcon, XLogoIcon, GoodreadsLogoIcon, NyTimesLogoIcon, DropboxLogoIcon, BehanceLogoIcon, AndroidLogoIcon, WindowsLogoIcon, PatreonLogoIcon} from "@phosphor-icons/react";
+import LogoLoop from '@/components/LogoLoop';
+
+const techLogos = [
+  { node: <MetaLogoIcon />, title: "Meta", href: "https://meta.com" },
+  { node: <AmazonLogoIcon />, title: "Amazon", href: "https://amazon.com" },
+  { node: <GoogleLogoIcon />, title: "Google", href: "https://google.com" },
+  { node: <TiktokLogoIcon />, title: "TikTok", href: "https://tiktok.com" },
+  { node: <SketchLogoIcon />, title: "Sketch", href: "https://sketch.com" },
+  { node: <InstagramLogoIcon />, title: "Instagram", href: "https://instagram.com" },
+  { node: <YoutubeLogoIcon />, title: "YouTube", href: "https://youtube.com" },
+  { node: <LinkedinLogoIcon />, title: "LinkedIn", href: "https://linkedin.com" },
+  { node: <SlackLogoIcon />, title: "Slack", href: "https://slack.com" },
+  { node: <AppleLogoIcon />, title: "Apple", href: "https://apple.com" },
+  { node: <LinuxLogoIcon />, title: "Linux", href: "https://linux.org" },
+  { node: <LinktreeLogoIcon />, title: "Linktree", href: "https://linktree.com" },
+  { node: <MastodonLogoIcon />, title: "Mastodon", href: "https://mastodon.com" },
+  { node: <SpotifyLogoIcon />, title: "Spotify", href: "https://spotify.com" },
+  { node: <XLogoIcon />, title: "X", href: "https://x.com" },
+  { node: <GoodreadsLogoIcon />, title: "Goodreads", href: "https://goodreads.com" },
+  { node: <NyTimesLogoIcon />, title: "New York Times", href: "https://nytimes.com" },
+  { node: <DropboxLogoIcon />, title: "Dropbox", href: "https://dropbox.com" },
+  { node: <BehanceLogoIcon />, title: "Behance", href: "https://behance.net" },
+  { node: <AndroidLogoIcon />, title: "Android", href: "https://android.com" },
+  { node: <WindowsLogoIcon />, title: "Windows", href: "https://windows.com" },
+  { node: <PatreonLogoIcon />, title: "Patreon", href: "https://patreon.com" },
+];
+
 
 const LazyBrandCard = dynamic(() => import('@/components/brand-card').then(m => m.BrandCard), {
   loading: () => <div className="glass rounded-3xl h-80" />,
 });
-
-// Register GSAP plugins
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { colorFormat, favorites, layout, setColorFormat: setColorFormatPref, setLayout } = usePreferences();
   const deferredQuery = useDeferredValue(searchQuery);
-  const headerRef = useRef<HTMLElement>(null);
-  const searchRef = useRef<HTMLDivElement>(null);
-  const categoriesRef = useRef<HTMLDivElement>(null);
-  const sentinelRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
   const fetchedOnceRef = useRef(false);
 
-  const [dataBrands, setDataBrands] = useState<Brand[]>(() => {
-    const rb = getRuntimeBrands();
-    return rb.length ? rb : staticBrands;
-  });
+  const [dataBrands, setDataBrands] = useState<Brand[]>(staticBrands);
   const supabase = getSupabase();
   const [mounted, setMounted] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState<'name' | 'category' | 'colors'>('name');
+  const itemsPerPage = 24;
 
   const categories = useMemo<string[]>(() => {
     const set = new Set<string>();
@@ -75,7 +86,8 @@ export default function Home() {
       setDataBrands(remote);
       setSelectedCategory(null);
       toast.success('Fetched remote brands', { description: `${remote.length} brands` });
-    } catch {
+    } catch (error) {
+      console.error('Failed to fetch remote brands:', error);
       toast.error('Failed to fetch remote brands');
     }
   };
@@ -95,8 +107,47 @@ export default function Home() {
         brand.tags?.some(tag => tag.toLowerCase().includes(lowerQuery))
       );
     }
+    
+    // Sort brands
+    result = [...result].sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'category':
+          return a.category.localeCompare(b.category) || a.name.localeCompare(b.name);
+        case 'colors':
+          return b.colors.length - a.colors.length || a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
+    
     return result;
-  }, [deferredQuery, selectedCategory, favorites, dataBrands]);
+  }, [deferredQuery, selectedCategory, favorites, dataBrands, sortBy]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredBrands.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedBrands = filteredBrands.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [deferredQuery, selectedCategory, sortBy]);
+
+  // Type guard for Supabase brand row
+  function isValidBrandRow(row: unknown): row is { id: string; name: string; category: string; website?: string; colors?: { name: string; hex: string }[] } {
+    if (!row || typeof row !== 'object') return false;
+    const r = row as Record<string, unknown>;
+    return (
+      typeof r.id === 'string' &&
+      typeof r.name === 'string' &&
+      typeof r.category === 'string' &&
+      (r.website === undefined || typeof r.website === 'string') &&
+      (r.colors === undefined || Array.isArray(r.colors))
+    );
+  }
 
   const loadFromSupabase = useCallback(async () => {
     if (!supabase) {
@@ -104,12 +155,48 @@ export default function Home() {
       return;
     }
     try {
-      const { data, error } = await supabase.from('brands').select('id,name,category,website,colors(name,hex)').order('name');
-      if (error) throw error;
-      const list = (data ?? []).map((d: unknown) => {
-        const row = d as { id: string; name: string; category: string; website?: string; colors?: { name: string; hex: string }[] };
-        return { id: row.id, name: row.name, category: row.category, website: row.website, colors: row.colors ?? [] };
-      }) as Brand[];
+      // Load brands and colors separately to avoid join issues
+      const { data: brandsData, error: brandsError } = await supabase
+        .from('brands')
+        .select('id,name,category,website')
+        .order('name');
+      
+      if (brandsError) throw brandsError;
+      
+      const { data: colorsData, error: colorsError } = await supabase
+        .from('colors')
+        .select('brand_id,hex,rgb,hsl,oklch')
+        .order('brand_id');
+      
+      if (colorsError) throw colorsError;
+      
+      if (!brandsData || brandsData.length === 0) {
+        toast.info('No brands in Supabase; showing local dataset');
+        return;
+      }
+      
+      // Group colors by brand_id
+      const colorsByBrand = new Map<string, Array<{ hex: string; rgb?: string; hsl?: string; oklch?: string }>>();
+      for (const color of colorsData || []) {
+        const arr = colorsByBrand.get(color.brand_id) ?? [];
+        arr.push({
+          hex: color.hex,
+          rgb: color.rgb || undefined,
+          hsl: color.hsl || undefined,
+          oklch: color.oklch || undefined,
+        });
+        colorsByBrand.set(color.brand_id, arr);
+      }
+      
+      // Build brand list with colors
+      const list: Brand[] = brandsData.map(brand => ({
+        id: brand.id,
+        name: brand.name,
+        category: brand.category,
+        website: brand.website || undefined,
+        colors: colorsByBrand.get(brand.id) ?? [],
+      }));
+      
       if (list.length > 0) {
         saveRuntimeBrands(list);
         setDataBrands(list);
@@ -118,7 +205,8 @@ export default function Home() {
       } else {
         toast.info('No brands in Supabase; showing local dataset');
       }
-    } catch {
+    } catch (error) {
+      console.error('Failed to load from Supabase:', error);
       toast.error('Failed to load from Supabase');
     }
   }, [supabase]);
@@ -132,198 +220,67 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true);
+    // Load from localStorage after mount to avoid hydration mismatch
+    const rb = getRuntimeBrands();
+    if (rb.length > 0) {
+      setDataBrands(rb);
+    }
   }, []);
 
-  useLayoutEffect(() => {
-    // Container-level animation no longer needed; handled per-item for reliable stagger
-  }, [filteredBrands, layout]);
-
-  // GSAP ScrollTrigger for smooth sticky header animations
-  useEffect(() => {
-    if (!headerRef.current || !searchRef.current || !categoriesRef.current || !sentinelRef.current) return;
-
-    const ctx = gsap.context(() => {
-      const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (prefersReduced) return;
-      // Use sentinel element to avoid trigger position changes during animation
-      ScrollTrigger.create({
-        trigger: sentinelRef.current,
-        start: 'bottom 8px', // When sentinel bottom reaches the sticky position
-        end: 'bottom 8px',
-        toggleActions: 'play none none reverse', // Only play on enter, reverse on leave back
-        invalidateOnRefresh: true,
-        onEnter: () => {
-          // Kill any existing animations to prevent conflicts
-          gsap.killTweensOf([headerRef.current, searchRef.current, categoriesRef.current]);
-
-          // Animate to stuck state
-          gsap.to(headerRef.current, {
-            height: '4rem',
-            duration: 0.3,
-            ease: 'power2.out',
-            overwrite: 'auto'
-          });
-          if (headerRef.current) headerRef.current.classList.add('is-stuck');
-
-          // Fade out search and categories
-          gsap.to([searchRef.current, categoriesRef.current], {
-            opacity: 0,
-            duration: 0.3,
-            ease: 'power2.out',
-            overwrite: 'auto'
-          });
-        },
-        onLeaveBack: () => {
-          // Kill any existing animations to prevent conflicts
-          gsap.killTweensOf([headerRef.current, searchRef.current, categoriesRef.current]);
-
-          // Animate back to normal state - clear inline styles to let CSS take over
-          gsap.to(headerRef.current, {
-            height: 'auto',
-            duration: 0.3,
-            ease: 'power2.out',
-            overwrite: 'auto'
-          });
-          if (headerRef.current) headerRef.current.classList.remove('is-stuck');
-
-          // Fade in search and categories
-          gsap.to([searchRef.current, categoriesRef.current], {
-            opacity: 1,
-            duration: 0.3,
-            ease: 'power2.out',
-            overwrite: 'auto'
-          });
-        }
-      });
-    });
-
-    return () => {
-      ctx.revert();
-    };
-  }, []);
 
   const handleFormatChange = (format: ColorFormat) => {
     setColorFormatPref(format);
-    setColorFormat(format);
   };
 
   return (
-    <div className="min-h-screen bg-background max-w-4xl w-full mx-auto relative selection:bg-primary selection:text-primary-foreground">
-      {/* Sentinel element for ScrollTrigger - positioned where header starts */}
-      <div ref={sentinelRef} className="absolute top-12 left-0 w-full h-px pointer-events-none" aria-hidden="true" />
+    <div className="min-h-screen flex flex-col w-screen mx-auto">
       
-      {/* Header */}
-        <header
-          ref={headerRef}
-          className="sticky top-2 mt-4 z-50 w-full rounded-xl glass shadow-sm shadow-neutral-900/5 overflow-hidden transition-shadow duration-300"
-          suppressHydrationWarning
-        >
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <FolderOpen className="h-6 w-6 transition-smooth" />
-              <h1 className="text-lg font-medium tracking-tight transition-smooth">Brand×Colors · Directory</h1>
-            </div>
-            
-          <div className="flex items-center gap-3">
-            <ColorFormatSelector value={colorFormat} onChange={handleFormatChange} />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-9 px-3 gap-2">
-                  <Download className="h-4 w-4" />
-                  Export
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onSelect={() => {
-                    const content = exportAsJSON(filteredBrands);
-                    downloadFile(content, 'brandcolors.json', 'application/json');
-                  }}
-                >
-                  Download JSON
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={() => {
-                    const content = exportAsCSS(filteredBrands);
-                    downloadFile(content, 'brandcolors.css', 'text/css');
-                  }}
-                >
-                  Download CSS Variables
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={() => {
-                    const content = exportAsTailwind(filteredBrands);
-                    downloadFile(content, 'brandcolors.tailwind.js', 'application/javascript');
-                  }}
-                >
-                  Download Tailwind Theme
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={() => {
-                    const content = exportAsSVG(filteredBrands);
-                    downloadFile(content, 'brandcolors.svg', 'image/svg+xml');
-                  }}
-                >
-                  Download SVG Swatches
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={() => fileRef.current?.click()}
-                >
-                  Import JSON
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={loadFromSupabase}
-                >
-                  Refresh from Supabase
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={refreshFromRemote}
-                >
-                  Refresh from Remote
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={() => {
-                    clearRuntimeBrands();
-                    setDataBrands(staticBrands);
-                    setSelectedCategory(null);
-                    toast.success('Reset to default brands');
-                  }}
-                >
-                  Reset to Defaults
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <ThemeToggle />
-          </div>
-          </div>
-
-          <input
-            ref={fileRef}
-            type="file"
-            accept="application/json"
-            className="hidden"
-            onChange={async (e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              try {
-                const text = await file.text();
-                const parsed = JSON.parse(text);
-                if (!validateBrands(parsed)) throw new Error('Invalid format');
-                const normalized = parsed.map((b: Brand) => normalizeBrand(b));
-                saveRuntimeBrands(normalized);
-                setDataBrands(normalized);
-                setSelectedCategory(null);
-                toast.success('Imported brands', { description: `${normalized.length} brands` });
-              } catch {
-                toast.error('Failed to import brands');
-              } finally {
-                e.target.value = '';
-              }
-            }}
+      <div className="relative h-[70vh] w-[calc(100%-4rem)] mx-auto mt-8 glass rounded-3xl overflow-hidden">
+        <div className="absolute inset-0 -top-1 h-[calc(100%-80px)] -z-1 rounded-3xl overflow-hidden">
+          <ColorBends
+            colors={["#FF3737", "#FCAF45"]}
+            rotation={0}
+            speed={0.2}
+            scale={1.2}
+            frequency={1}
+            warpStrength={1}
+            mouseInfluence={1}
+            parallax={0.2}
+            noise={0.1}
+            transparent={true}
           />
+        </div>
+
+        {/* Header */}
+        <SiteHeader
+          colorFormat={colorFormat}
+          onColorFormatChange={handleFormatChange}
+          favorites={favorites}
+          brands={dataBrands}
+        />
+  
+        {/* Hero Section */}
+        <HeroSection />
+
+        <div className="absolute bottom-0 left-0 w-full h-[80px] text-foreground/70 flex items-center justify-center bg-white">
+          {/* Basic horizontal loop */}
+          <LogoLoop
+            logos={techLogos}
+            speed={10}
+            direction="left"
+            logoHeight={24}
+            gap={50}
+            ariaLabel="Technology partners"
+          />
+        </div>
+      </div>
+
+      {/* Main Content - Brands Section */}
+      <main className="flex-1 mx-auto space-y-6 glass rounded-2xl p-4 w-full mt-4">
+        {/* Filters, Search, Sort, Layout Controls */}
+        <div className="space-y-4">
           {/* Search */}
-          <div ref={searchRef} className="mt-4 relative">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
@@ -334,14 +291,14 @@ export default function Home() {
               aria-label="Search brands"
             />
           </div>
-          
+
           {/* Category Filters */}
           {mounted && (
-            <div ref={categoriesRef} className="mt-4 flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2">
               <Badge
                 asChild
                 variant={selectedCategory === null ? 'default' : 'outline'}
-                className="transition-smooth"
+                className="transition-smooth cursor-pointer"
               >
                 <button type="button" onClick={() => setSelectedCategory(null)}>All</button>
               </Badge>
@@ -350,7 +307,7 @@ export default function Home() {
                   asChild
                   key={category}
                   variant={selectedCategory === category ? 'default' : 'outline'}
-                  className="transition-smooth"
+                  className="transition-smooth cursor-pointer"
                 >
                   <button type="button" onClick={() => setSelectedCategory(category)}>{category}</button>
                 </Badge>
@@ -358,37 +315,71 @@ export default function Home() {
               <Badge
                 asChild
                 variant={selectedCategory === 'Favorites' ? 'default' : 'outline'}
-                className="transition-smooth"
+                className="transition-smooth cursor-pointer"
               >
                 <button type="button" onClick={() => setSelectedCategory('Favorites')}>❤️ Favorites</button>
               </Badge>
             </div>
           )}
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-2 py-8">
-        <div className="mb-4 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground" aria-live="polite" suppressHydrationWarning>
-            {mounted ? (
-              <>Showing {filteredBrands.length} {filteredBrands.length === 1 ? 'brand' : 'brands'}</>
-            ) : (
-              <>Loading…</>
-            )}
-          </p>
-          <div className="flex items-center gap-0 rounded-md border border-slate-300 overflow-hidden">
-            <Button variant={layout === 'grid' ? 'default' : 'outline'} size="sm" onClick={() => setLayout('grid')} className="rounded-none">
-              <LayoutGrid className="h-4 w-4" />
-            </Button>
-            <Button variant={layout === 'list' ? 'default' : 'outline'} size="sm" onClick={() => setLayout('list')} className="rounded-none">
-              <LayoutList className="h-4 w-4" />
-            </Button>
-            <Button variant={layout === 'compact' ? 'default' : 'outline'} size="sm" onClick={() => setLayout('compact')} className="rounded-none">
-              <List className="h-4 w-4" />
-            </Button>
+          {/* Sort and Layout Controls */}
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Select value={sortBy} onValueChange={(v: 'name' | 'category' | 'colors') => setSortBy(v)}>
+                <SelectTrigger className="w-[180px]">
+                  <ArrowUpDown className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="name">Sort by Name</SelectItem>
+                  <SelectItem value="category">Sort by Category</SelectItem>
+                  <SelectItem value="colors">Sort by Colors</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-muted-foreground" aria-live="polite" suppressHydrationWarning>
+                {mounted ? (
+                  <>Showing {filteredBrands.length} {filteredBrands.length === 1 ? 'brand' : 'brands'}</>
+                ) : (
+                  <>Loading…</>
+                )}
+              </p>
+              <div className="flex items-center gap-0 rounded-md border overflow-hidden">
+                <Button
+                  variant={layout === 'grid' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setLayout('grid')}
+                  className="rounded-none"
+                  aria-label="Grid layout"
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={layout === 'list' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setLayout('list')}
+                  className="rounded-none"
+                  aria-label="List layout"
+                >
+                  <LayoutList className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={layout === 'compact' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setLayout('compact')}
+                  className="rounded-none"
+                  aria-label="Compact layout"
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* Brands List */}
         {filteredBrands.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-lg text-muted-foreground">No brands found</p>
@@ -400,27 +391,89 @@ export default function Home() {
           <>
             {layout === 'grid' ? (
               <div key={layout} ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                {filteredBrands.map((brand, idx) => (
-                  <LazyBrandCard key={brand.id} brand={brand} colorFormat={colorFormat} layout={layout} appearIndex={idx} />
+                {paginatedBrands.map((brand, idx) => (
+                  <LazyBrandCard key={brand.id} brand={brand} colorFormat={colorFormat} layout={layout} appearIndex={startIndex + idx} />
                 ))}
               </div>
             ) : (
               <div key={layout} ref={listRef} className="grid grid-cols-1 gap-0">
                 {layout === 'list'
-                  ? filteredBrands.map((brand, idx) => (
-                      <BrandRowList key={brand.id} brand={brand} colorFormat={colorFormat} appearIndex={idx} />
+                  ? paginatedBrands.map((brand, idx) => (
+                      <BrandRowList key={brand.id} brand={brand} colorFormat={colorFormat} appearIndex={startIndex + idx} />
                     ))
-                  : filteredBrands.map((brand, idx) => (
-                      <BrandRowCompact key={brand.id} brand={brand} colorFormat={colorFormat} appearIndex={idx} />
+                  : paginatedBrands.map((brand, idx) => (
+                      <BrandRowCompact key={brand.id} brand={brand} colorFormat={colorFormat} appearIndex={startIndex + idx} />
                     ))}
               </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-8 flex items-center justify-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(7, totalPages) }, (_, i) => {
+                    let pageNum: number;
+                    if (totalPages <= 7) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 4) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 3) {
+                      pageNum = totalPages - 6 + i;
+                    } else {
+                      pageNum = currentPage - 3 + i;
+                    }
+                    
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={currentPage === pageNum ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setCurrentPage(pageNum)}
+                        className="min-w-10"
+                        aria-label={`Go to page ${pageNum}`}
+                        aria-current={currentPage === pageNum ? 'page' : undefined}
+                      >
+                        {pageNum}
+                      </Button>
+                    );
+                  })}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                  aria-label="Next page"
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+            
+            {totalPages > 1 && (
+              <p className="text-center text-sm text-muted-foreground mt-2">
+                Showing {startIndex + 1}-{Math.min(endIndex, filteredBrands.length)} of {filteredBrands.length} brands
+              </p>
             )}
           </>
         )}
       </main>
 
       {/* Footer */}
-      <footer className="border-t glass mt-20">
+      <footer className="border-t glass mt-auto">
         <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
           <p>A curated library of official brand colors</p>
           <p className="mt-1">{dataBrands.length} brands • Multiple color formats • Open source</p>

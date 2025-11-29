@@ -6,19 +6,19 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
-type ColorInput = { name: string; hex: string }
+type ColorInput = { hex: string }
 
 export default function SuggestPage() {
   const supabase = getSupabase()
   const [name, setName] = useState('')
   const [category, setCategory] = useState('')
   const [website, setWebsite] = useState('')
-  const [colors, setColors] = useState<ColorInput[]>([{ name: '', hex: '' }])
+  const [colors, setColors] = useState<ColorInput[]>([{ hex: '' }])
   const [submitted, setSubmitted] = useState(false)
-  const addColor = () => setColors(v => [...v, { name: '', hex: '' }])
+  const addColor = () => setColors(v => [...v, { hex: '' }])
   const updateColor = (i: number, k: keyof ColorInput, val: string) => setColors(v => v.map((c, idx) => (idx === i ? { ...c, [k]: val } : c)))
   const removeColor = (i: number) => setColors(v => v.filter((_, idx) => idx !== i))
-  const canSubmit = name && category && website && colors.length && colors.every(c => c.name && c.hex)
+  const canSubmit = name && category && website && colors.length && colors.every(c => c.hex)
 
   const submit = async () => {
     if (!supabase) return setSubmitted(true)
@@ -39,7 +39,6 @@ export default function SuggestPage() {
           <div className="space-y-2">
             {colors.map((c, i) => (
               <div key={i} className="flex gap-2">
-                <Input placeholder="color name" value={c.name} onChange={e => updateColor(i, 'name', e.target.value)} />
                 <Input placeholder="#HEX" value={c.hex} onChange={e => updateColor(i, 'hex', e.target.value)} />
                 <Button variant="ghost" onClick={() => removeColor(i)}>Remove</Button>
               </div>

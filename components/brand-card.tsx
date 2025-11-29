@@ -3,12 +3,20 @@
 import { Brand, ColorFormat, LayoutMode } from '@/lib/types';
 import { ColorSwatch } from './color-swatch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Heart } from 'lucide-react';
+import { Heart, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BrandLogo } from './brand-logo';
 import { usePreferences } from '@/lib/store';
 import { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import { ANIMATION } from '@/lib/constants';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import { exportAsJSON, exportAsCSS, exportAsTailwind, exportAsSVG, downloadFile } from '@/lib/utils';
 
 interface BrandCardProps {
   brand: Brand;
@@ -27,7 +35,14 @@ export function BrandCard({ brand, colorFormat, layout = 'grid', appearIndex = 0
     gsap.fromTo(
       rootRef.current,
       { autoAlpha: 0, y: 4 },
-      { autoAlpha: 1, y: 0, duration: 0.18, ease: 'power2.out', delay: appearIndex * 0.04, overwrite: 'auto' }
+      { 
+        autoAlpha: 1, 
+        y: 0, 
+        duration: ANIMATION.CARD_APPEAR_DURATION, 
+        ease: 'power2.out', 
+        delay: appearIndex * ANIMATION.STAGGER_DELAY, 
+        overwrite: 'auto' 
+      }
     );
   }, [appearIndex, layout]);
 
@@ -57,15 +72,61 @@ export function BrandCard({ brand, colorFormat, layout = 'grid', appearIndex = 0
           <Button
             variant="ghost"
             size={layout === 'compact' ? 'icon' : 'icon-lg'}
-            // className="h-8 w-8"
             onClick={handleToggleFavorite}
+            aria-label={favorite ? `Remove ${brand.name} from favorites` : `Add ${brand.name} to favorites`}
           >
             <Heart
               className={`h-6! w-6! transition-smooth ${
                 favorite ? 'fill-red-500 text-red-500' : 'text-slate-400'
               }`}
+              aria-hidden="true"
             />
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size={layout === 'compact' ? 'icon' : 'icon-lg'}
+                aria-label={`Export ${brand.name} colors`}
+              >
+                <Download className="h-4 w-4" aria-hidden="true" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onSelect={() => {
+                  const content = exportAsJSON([brand]);
+                  downloadFile(content, `${brand.id}.json`, 'application/json');
+                }}
+              >
+                Download JSON
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => {
+                  const content = exportAsCSS([brand]);
+                  downloadFile(content, `${brand.id}.css`, 'text/css');
+                }}
+              >
+                Download CSS Variables
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => {
+                  const content = exportAsTailwind([brand]);
+                  downloadFile(content, `${brand.id}.tailwind.js`, 'application/javascript');
+                }}
+              >
+                Download Tailwind Theme
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => {
+                  const content = exportAsSVG([brand]);
+                  downloadFile(content, `${brand.id}.svg`, 'image/svg+xml');
+                }}
+              >
+                Download SVG Swatches
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardHeader>
       <CardContent>

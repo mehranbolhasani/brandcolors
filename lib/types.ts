@@ -1,5 +1,5 @@
 export interface BrandColor {
-  name: string; // e.g., "Primary Blue"
+  name?: string; // Optional: e.g., "Primary Blue" (deprecated, kept for backward compatibility)
   hex: string; // e.g., "#1877F2"
   rgb?: string; // Optional: "rgb(24, 119, 242)"
   hsl?: string; // Optional: "hsl(214, 89%, 52%)"

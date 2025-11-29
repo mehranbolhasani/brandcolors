@@ -11,6 +11,11 @@ export function cn(...inputs: ClassValue[]) {
 // Color Conversion Functions
 // ============================================
 
+/**
+ * Converts a HEX color string to RGB format
+ * @param hex - Hex color string (e.g., "#FF0000" or "FF0000")
+ * @returns RGB color string (e.g., "rgb(255, 0, 0)")
+ */
 export function hexToRgb(hex: string): string {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (!result) return hex;
@@ -22,6 +27,11 @@ export function hexToRgb(hex: string): string {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
+/**
+ * Converts a HEX color string to HSL format
+ * @param hex - Hex color string (e.g., "#FF0000" or "FF0000")
+ * @returns HSL color string (e.g., "hsl(0, 100%, 50%)")
+ */
 export function hexToHsl(hex: string): string {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (!result) return hex;
@@ -52,6 +62,12 @@ export function hexToHsl(hex: string): string {
   return `hsl(${h}, ${s}%, ${l}%)`;
 }
 
+/**
+ * Converts a HEX color string to OKLCH color space
+ * OKLCH is a perceptually uniform color space that provides better color consistency
+ * @param hex - Hex color string (e.g., "#FF0000" or "FF0000")
+ * @returns OKLCH color string (e.g., "oklch(0.61 0.24 264)")
+ */
 export function hexToOklch(hex: string): string {
   const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (!m) return hex;
@@ -79,6 +95,12 @@ export function hexToOklch(hex: string): string {
   return `oklch(${Lc.toFixed(2)} ${Cc.toFixed(2)} ${Hc})`;
 }
 
+/**
+ * Formats a color in the specified format
+ * @param hex - Hex color string to format
+ * @param format - Target format: 'hex', 'rgb', 'hsl', or 'oklch'
+ * @returns Formatted color string in the requested format
+ */
 export function formatColor(hex: string, format: ColorFormat): string {
   switch (format) {
     case 'hex':
@@ -100,6 +122,12 @@ export function hexToRgbTuple(hex: string): [number, number, number] | null {
   return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
 }
 
+/**
+ * Calculates the relative luminance of a color (0-1 scale)
+ * Used to determine text contrast for accessibility
+ * @param hex - Hex color string
+ * @returns Luminance value between 0 (darkest) and 1 (lightest)
+ */
 export function getLuminance(hex: string): number {
   const t = hexToRgbTuple(hex);
   if (!t) return 0;
@@ -117,6 +145,11 @@ export function isVeryBright(hex: string): boolean {
   return getLuminance(hex) > 0.92;
 }
 
+/**
+ * Determines the appropriate text color (black or white) for a given background color
+ * @param hex - Background hex color string
+ * @returns '#000000' for bright backgrounds, '#FFFFFF' for dark backgrounds
+ */
 export function getTextColorForBackground(hex: string): string {
   return isBright(hex) ? '#000000' : '#FFFFFF';
 }
@@ -125,6 +158,11 @@ export function getTextColorForBackground(hex: string): string {
 // Clipboard Functions
 // ============================================
 
+/**
+ * Copies text to the clipboard with fallback for older browsers
+ * @param text - Text to copy to clipboard
+ * @returns Promise that resolves to true if successful, false otherwise
+ */
 export async function copyToClipboard(text: string): Promise<boolean> {
   try {
     if (navigator.clipboard && window.isSecureContext) {
@@ -225,11 +263,123 @@ export function setColorFormat(format: ColorFormat): void {
   setColorFormatPref(format);
 }
 
+/**
+ * Validates if a string is a valid hex color
+ * @param hex - Hex color string to validate
+ * @returns true if valid hex color format
+ */
+export function isValidHex(hex: string): boolean {
+  return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex);
+}
+
+/**
+ * Parses RGB string and converts to HEX
+ * @param rgb - RGB string like "rgb(255, 0, 0)" or "255, 0, 0"
+ * @returns HEX color string or null if invalid
+ */
+export function rgbToHex(rgb: string): string | null {
+  const match = rgb.match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+  if (!match) return null;
+  const r = parseInt(match[1], 10);
+  const g = parseInt(match[2], 10);
+  const b = parseInt(match[3], 10);
+  if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) return null;
+  return `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase()}`;
+}
+
+/**
+ * Parses HSL string and converts to HEX
+ * @param hsl - HSL string like "hsl(0, 100%, 50%)"
+ * @returns HEX color string or null if invalid
+ */
+export function hslToHex(hsl: string): string | null {
+  const match = hsl.match(/(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)%\s*,\s*(\d+(?:\.\d+)?)%/);
+  if (!match) return null;
+  const h = parseFloat(match[1]) / 360;
+  const s = parseFloat(match[2]) / 100;
+  const l = parseFloat(match[3]) / 100;
+  
+  if (s === 0) {
+    const gray = Math.round(l * 255);
+    return `#${gray.toString(16).padStart(2, '0').repeat(3).toUpperCase()}`;
+  }
+  
+  const hue2rgb = (p: number, q: number, t: number) => {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1/6) return p + (q - p) * 6 * t;
+    if (t < 1/2) return q;
+    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+    return p;
+  };
+  
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  const p = 2 * l - q;
+  const r = Math.round(hue2rgb(p, q, h + 1/3) * 255);
+  const g = Math.round(hue2rgb(p, q, h) * 255);
+  const b = Math.round(hue2rgb(p, q, h - 1/3) * 255);
+  
+  return `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase()}`;
+}
+
+/**
+ * Parses OKLCH string and converts to HEX (simplified conversion)
+ * @param oklch - OKLCH string like "oklch(0.61 0.24 264)"
+ * @returns HEX color string or null if invalid
+ */
+export function oklchToHex(oklch: string): string | null {
+  // This is a simplified conversion - full OKLCH to RGB conversion is complex
+  // For now, we'll return null and let users enter HEX directly
+  // Full implementation would require OKLCH -> LAB -> XYZ -> RGB conversion
+  return null;
+}
+
+/**
+ * Detects color format and converts to HEX
+ * @param value - Color value in any format
+ * @returns HEX color string or null if invalid
+ */
+export function parseColorToHex(value: string): string | null {
+  if (!value.trim()) return null;
+  
+  const trimmed = value.trim();
+  
+  // Check if it's already HEX
+  if (trimmed.startsWith('#')) {
+    const normalized = normalizeHex(trimmed);
+    return isValidHex(normalized) ? normalized : null;
+  }
+  
+  // Check if it's RGB
+  if (trimmed.toLowerCase().startsWith('rgb')) {
+    return rgbToHex(trimmed);
+  }
+  
+  // Check if it's HSL
+  if (trimmed.toLowerCase().startsWith('hsl')) {
+    return hslToHex(trimmed);
+  }
+  
+  // Check if it's OKLCH
+  if (trimmed.toLowerCase().startsWith('oklch')) {
+    return oklchToHex(trimmed);
+  }
+  
+  // Try as HEX without #
+  const withHash = normalizeHex(trimmed);
+  return isValidHex(withHash) ? withHash : null;
+}
+
 export function normalizeHex(hex: string): string {
   const v = hex.trim().toUpperCase();
   return v.startsWith('#') ? v : `#${v}`;
 }
 
+/**
+ * Normalizes a brand object by trimming strings and normalizing hex colors
+ * @param brand - Brand object to normalize
+ * @returns Normalized brand object with cleaned data
+ */
 export function normalizeBrand(brand: Brand): Brand {
   return {
     ...brand,
@@ -238,7 +388,6 @@ export function normalizeBrand(brand: Brand): Brand {
     category: brand.category.trim(),
     colors: brand.colors.map(c => ({
       ...c,
-      name: c.name.trim(),
       hex: normalizeHex(c.hex),
     })),
   };
@@ -248,11 +397,16 @@ function isRecord(v: unknown): v is Record<string, unknown> {
   return !!v && typeof v === 'object';
 }
 
-function isColor(v: unknown): v is { name: string; hex: string } {
+function isColor(v: unknown): v is { hex: string; name?: string } {
   if (!isRecord(v)) return false;
-  return typeof v.name === 'string' && typeof v.hex === 'string';
+  return typeof v.hex === 'string';
 }
 
+/**
+ * Type guard to validate if input is an array of valid Brand objects
+ * @param input - Unknown value to validate
+ * @returns true if input is a valid array of Brand objects
+ */
 export function validateBrands(input: unknown): input is Brand[] {
   if (!Array.isArray(input)) return false;
   for (const b of input) {
@@ -300,8 +454,8 @@ export function exportAsCSS(brands: Brand[]): string {
   let css = ':root {\n';
   
   brands.forEach(brand => {
-    brand.colors.forEach((color) => {
-      const varName = `--${brand.id}-${color.name.toLowerCase().replace(/\s+/g, '-')}`;
+    brand.colors.forEach((color, index) => {
+      const varName = `--${brand.id}-color-${index + 1}`;
       css += `  ${varName}: ${color.hex};\n`;
     });
   });
@@ -315,8 +469,8 @@ export function exportAsTailwind(brands: Brand[]): string {
   
   brands.forEach(brand => {
     const brandColors: Record<string, string> = {};
-    brand.colors.forEach(color => {
-      const colorKey = color.name.toLowerCase().replace(/\s+/g, '-');
+    brand.colors.forEach((color, index) => {
+      const colorKey = `color-${index + 1}`;
       brandColors[colorKey] = color.hex;
     });
     colors[brand.id] = brandColors;

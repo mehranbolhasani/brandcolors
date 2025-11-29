@@ -25,7 +25,7 @@ export function ColorSwatch({ color, format, brandName, variant = 'default' }: C
     if (success) {
       setCopied(true);
       toast.success(`Copied ${formattedColor}`, {
-        description: `${brandName} - ${color.name}`,
+        description: brandName,
       });
       setTimeout(() => setCopied(false), 2000);
     } else {
@@ -39,7 +39,9 @@ export function ColorSwatch({ color, format, brandName, variant = 'default' }: C
         <TooltipTrigger asChild>
           <button
             onClick={handleCopy}
-            className={variant === 'compact' ? 'group relative flex items-center justify-center h-12 w-20 rounded-md transition-smooth' : 'group relative flex flex-col items-center gap-2 px-4 hover:bg-muted/50 transition-smooth flex-1 justify-end'} style={{ backgroundColor: color.hex, color: textColor, border: veryBright ? '1px solid rgba(0,0,0,0.1)' : undefined }}
+            className={variant === 'compact' ? 'group relative flex items-center justify-center h-12 w-20 rounded-md transition-smooth' : 'group relative flex flex-col items-center gap-2 px-4 hover:bg-muted/50 transition-smooth flex-1 justify-end'} 
+            style={{ backgroundColor: color.hex, color: textColor, border: veryBright ? '1px solid rgba(0,0,0,0.1)' : undefined }}
+            aria-label={`Copy ${formattedColor} from ${brandName}`}
           >
             {variant === 'compact' ? (
               <span className="text-[10px] font-mono text-white px-1 py-0.5 rounded bg-black/20">

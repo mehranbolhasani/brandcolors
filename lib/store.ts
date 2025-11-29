@@ -33,6 +33,10 @@ function emit() {
   for (const l of listeners) l()
 }
 
+/**
+ * Gets the current preferences state
+ * @returns Current preferences state object
+ */
 export function getPreferences(): PreferencesState {
   return state
 }
@@ -42,6 +46,10 @@ export function subscribePreferences(listener: () => void) {
   return () => listeners.delete(listener)
 }
 
+/**
+ * Sets the preferred color format and persists to localStorage
+ * @param format - Color format to set ('hex', 'rgb', 'hsl', or 'oklch')
+ */
 export function setColorFormatPref(format: ColorFormat) {
   state = { ...state, colorFormat: format }
   if (typeof window !== 'undefined') {
@@ -50,6 +58,10 @@ export function setColorFormatPref(format: ColorFormat) {
   emit()
 }
 
+/**
+ * Toggles a brand's favorite status and persists to localStorage
+ * @param brandId - ID of the brand to toggle favorite status
+ */
 export function toggleFavoritePref(brandId: string) {
   const favorites = new Set(state.favorites)
   if (favorites.has(brandId)) favorites.delete(brandId)
@@ -70,6 +82,11 @@ export function setLayoutPref(layout: LayoutMode) {
   emit()
 }
 
+/**
+ * React hook to access and modify user preferences
+ * Uses useSyncExternalStore for proper SSR support
+ * @returns Preferences state and setter functions
+ */
 export function usePreferences() {
   const subscribe = (cb: () => void) => subscribePreferences(cb)
   const getSnapshot = () => getPreferences()

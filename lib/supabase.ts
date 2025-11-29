@@ -2,6 +2,11 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
 let client: SupabaseClient | null = null
 
+/**
+ * Gets or creates a Supabase client instance
+ * Returns null if environment variables are not configured
+ * @returns Supabase client instance or null if not configured
+ */
 export function getSupabase(): SupabaseClient | null {
   if (client) return client
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL

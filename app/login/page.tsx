@@ -33,15 +33,29 @@ export default function LoginPage() {
   const magic = async () => {
     if (!supabase || !email) return
     setLoading(true)
-    const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/admin` : undefined
-    await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } })
-    setLoading(false)
+    try {
+      const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/admin` : undefined
+      const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } })
+      if (error) throw error
+      // Success message handled by Supabase redirect or can be added here
+    } catch (error) {
+      console.error('Failed to send magic link:', error)
+      // Error handling - could show toast if toast is available
+    } finally {
+      setLoading(false)
+    }
   }
 
   const oauth = async (provider: 'github' | 'google') => {
     if (!supabase) return
-    const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/admin` : undefined
-    await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } })
+    try {
+      const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/admin` : undefined
+      const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo } })
+      if (error) throw error
+    } catch (error) {
+      console.error('OAuth failed:', error)
+      // Error handling - could show toast if toast is available
+    }
   }
 
   return (

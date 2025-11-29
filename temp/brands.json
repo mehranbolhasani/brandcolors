@@ -1,0 +1,2161 @@
+[
+  {
+    "id": "acrobat",
+    "name": "Acrobat",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#FF0000"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "adobe",
+    "name": "Adobe",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#FF0000"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "after-effects",
+    "name": "After Effects",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#9999FF"
+      },
+      {
+        "hex": "#00005B"
+      }
+    ]
+  },
+  {
+    "id": "airbnb",
+    "name": "Airbnb",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#FF5A5F"
+      },
+      {
+        "hex": "#00A699"
+      },
+      {
+        "hex": "#FC642D"
+      },
+      {
+        "hex": "#484848"
+      }
+    ]
+  },
+  {
+    "id": "airbnb-experiences",
+    "name": "Airbnb Experiences",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#FF5A5F"
+      },
+      {
+        "hex": "#914669"
+      }
+    ]
+  },
+  {
+    "id": "airbnb-for-work",
+    "name": "Airbnb for Work",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#00A699"
+      },
+      {
+        "hex": "#484848"
+      }
+    ]
+  },
+  {
+    "id": "alexa",
+    "name": "Alexa",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#00CAFF"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "alphabet",
+    "name": "Alphabet",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#4285F4"
+      },
+      {
+        "hex": "#EA4335"
+      },
+      {
+        "hex": "#FBBC05"
+      },
+      {
+        "hex": "#34A853"
+      }
+    ]
+  },
+  {
+    "id": "amazon",
+    "name": "Amazon",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#FF9900"
+      },
+      {
+        "hex": "#000000"
+      },
+      {
+        "hex": "#146EB4"
+      }
+    ]
+  },
+  {
+    "id": "aws",
+    "name": "Amazon Web Services",
+    "category": "Cloud Computing",
+    "colors": [
+      {
+        "hex": "#FF9900"
+      },
+      {
+        "hex": "#232F3E"
+      }
+    ]
+  },
+  {
+    "id": "amd",
+    "name": "AMD",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#ED1C24"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "android",
+    "name": "Android",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#3DDC84"
+      },
+      {
+        "hex": "#073042"
+      }
+    ]
+  },
+  {
+    "id": "aol",
+    "name": "AOL",
+    "category": "Telecommunications",
+    "colors": [
+      {
+        "hex": "#00BFFF"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "app-store",
+    "name": "App Store",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#1D7AEE"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "apple",
+    "name": "Apple",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#000000"
+      },
+      {
+        "hex": "#F5F5F7"
+      },
+      {
+        "hex": "#86868B"
+      }
+    ]
+  },
+  {
+    "id": "apple-fitness-plus",
+    "name": "Apple Fitness+",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#E85D75"
+      },
+      {
+        "hex": "#F9CF3A"
+      },
+      {
+        "hex": "#66D885"
+      },
+      {
+        "hex": "#69C9E0"
+      }
+    ]
+  },
+  {
+    "id": "apple-music",
+    "name": "Apple Music",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#FC3C44"
+      },
+      {
+        "hex": "#FA233B"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "apple-pay",
+    "name": "Apple Pay",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#000000"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "apple-tv-plus",
+    "name": "Apple TV+",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#000000"
+      },
+      {
+        "hex": "#1D1D1F"
+      }
+    ]
+  },
+  {
+    "id": "arc",
+    "name": "Arc",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#0071C5"
+      },
+      {
+        "hex": "#E91E63"
+      },
+      {
+        "hex": "#9C27B0"
+      }
+    ]
+  },
+  {
+    "id": "audible",
+    "name": "Audible",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#F8991D"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "amazon-aws",
+    "name": "AWS",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#FF9900"
+      },
+      {
+        "hex": "#232F3E"
+      }
+    ]
+  },
+  {
+    "id": "azure",
+    "name": "Azure",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#0078D4"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "bigquery",
+    "name": "BigQuery",
+    "category": "Cloud Computing",
+    "colors": [
+      {
+        "hex": "#4285F4"
+      },
+      {
+        "hex": "#669DF6"
+      }
+    ]
+  },
+  {
+    "id": "bing",
+    "name": "Bing",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#258FFA"
+      },
+      {
+        "hex": "#FFB900"
+      },
+      {
+        "hex": "#00832D"
+      }
+    ]
+  },
+  {
+    "id": "bixby",
+    "name": "Bixby",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#8E44AD"
+      },
+      {
+        "hex": "#3498DB"
+      }
+    ]
+  },
+  {
+    "id": "bytedance",
+    "name": "ByteDance",
+    "category": "Chinese Tech Giants",
+    "colors": [
+      {
+        "hex": "#000000"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "capcut",
+    "name": "CapCut",
+    "category": "Chinese Tech Giants",
+    "colors": [
+      {
+        "hex": "#000000"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "cerner",
+    "name": "Cerner",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#0072CE"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "chatgpt",
+    "name": "ChatGPT",
+    "category": "AI & Machine Learning",
+    "colors": [
+      {
+        "hex": "#10A37F"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "chrome",
+    "name": "Chrome",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#4285F4"
+      },
+      {
+        "hex": "#EA4335"
+      },
+      {
+        "hex": "#FBBC05"
+      },
+      {
+        "hex": "#34A853"
+      }
+    ]
+  },
+  {
+    "id": "cloud-pak",
+    "name": "Cloud Pak",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#0062FF"
+      },
+      {
+        "hex": "#408BFC"
+      }
+    ]
+  },
+  {
+    "id": "cloud-storage",
+    "name": "Cloud Storage",
+    "category": "Cloud Computing",
+    "colors": [
+      {
+        "hex": "#4285F4"
+      },
+      {
+        "hex": "#34A853"
+      }
+    ]
+  },
+  {
+    "id": "compute-engine",
+    "name": "Compute Engine",
+    "category": "Cloud Computing",
+    "colors": [
+      {
+        "hex": "#4285F4"
+      },
+      {
+        "hex": "#1A73E8"
+      }
+    ]
+  },
+  {
+    "id": "core",
+    "name": "Core",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#0071C5"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "cortex",
+    "name": "Cortex",
+    "category": "Cybersecurity",
+    "colors": [
+      {
+        "hex": "#6B46C1"
+      },
+      {
+        "hex": "#EC4899"
+      }
+    ]
+  },
+  {
+    "id": "cuda",
+    "name": "CUDA",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#76B900"
+      },
+      {
+        "hex": "#91C733"
+      }
+    ]
+  },
+  {
+    "id": "dall-e",
+    "name": "DALL-E",
+    "category": "AI & Machine Learning",
+    "colors": [
+      {
+        "hex": "#FFD43B"
+      },
+      {
+        "hex": "#3B82F6"
+      },
+      {
+        "hex": "#FB923C"
+      }
+    ]
+  },
+  {
+    "id": "dynamodb",
+    "name": "DynamoDB",
+    "category": "Cloud Computing",
+    "colors": [
+      {
+        "hex": "#4B61D1"
+      },
+      {
+        "hex": "#3949A3"
+      }
+    ]
+  },
+  {
+    "id": "ec2",
+    "name": "EC2",
+    "category": "Cloud Computing",
+    "colors": [
+      {
+        "hex": "#EC7211"
+      },
+      {
+        "hex": "#C44B09"
+      }
+    ]
+  },
+  {
+    "id": "epic-games",
+    "name": "Epic Games",
+    "category": "Gaming & Entertainment",
+    "colors": [
+      {
+        "hex": "#000000"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "epic-games-store",
+    "name": "Epic Games Store",
+    "category": "Gaming & Entertainment",
+    "colors": [
+      {
+        "hex": "#121212"
+      },
+      {
+        "hex": "#FF4500"
+      }
+    ]
+  },
+  {
+    "id": "epyc",
+    "name": "EPYC",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#007DC3"
+      },
+      {
+        "hex": "#54585A"
+      }
+    ]
+  },
+  {
+    "id": "facebook",
+    "name": "Facebook",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#1877F2"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "fortnite",
+    "name": "Fortnite",
+    "category": "Gaming & Entertainment",
+    "colors": [
+      {
+        "hex": "#9146FF"
+      },
+      {
+        "hex": "#F9C23C"
+      }
+    ]
+  },
+  {
+    "id": "galaxy",
+    "name": "Galaxy",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#000000"
+      },
+      {
+        "hex": "#5C2E91"
+      },
+      {
+        "hex": "#1428A0"
+      }
+    ]
+  },
+  {
+    "id": "geforce",
+    "name": "GeForce",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#76B900"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "github",
+    "name": "GitHub",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#24292E"
+      },
+      {
+        "hex": "#FFFFFF"
+      },
+      {
+        "hex": "#6F42C1"
+      }
+    ]
+  },
+  {
+    "id": "globalprotect",
+    "name": "GlobalProtect",
+    "category": "Cybersecurity",
+    "colors": [
+      {
+        "hex": "#10B981"
+      },
+      {
+        "hex": "#3B82F6"
+      }
+    ]
+  },
+  {
+    "id": "gmail",
+    "name": "Gmail",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#EA4335"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "google",
+    "name": "Google",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#4285F4"
+      },
+      {
+        "hex": "#EA4335"
+      },
+      {
+        "hex": "#FBBC05"
+      },
+      {
+        "hex": "#34A853"
+      }
+    ]
+  },
+  {
+    "id": "google-cloud",
+    "name": "Google Cloud Platform",
+    "category": "Cloud Computing",
+    "colors": [
+      {
+        "hex": "#4285F4"
+      },
+      {
+        "hex": "#EA4335"
+      },
+      {
+        "hex": "#FBBC04"
+      },
+      {
+        "hex": "#34A853"
+      }
+    ]
+  },
+  {
+    "id": "google-drive",
+    "name": "Google Drive",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#4285F4"
+      },
+      {
+        "hex": "#F4B400"
+      },
+      {
+        "hex": "#0F9D58"
+      }
+    ]
+  },
+  {
+    "id": "google-maps",
+    "name": "Google Maps",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#4285F4"
+      },
+      {
+        "hex": "#0F9D58"
+      },
+      {
+        "hex": "#F4B400"
+      },
+      {
+        "hex": "#DB4437"
+      }
+    ]
+  },
+  {
+    "id": "gpt-4",
+    "name": "GPT-4",
+    "category": "AI & Machine Learning",
+    "colors": [
+      {
+        "hex": "#8B5CF6"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "heroku",
+    "name": "Heroku",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#430098"
+      },
+      {
+        "hex": "#6762A6"
+      }
+    ]
+  },
+  {
+    "id": "ibm",
+    "name": "IBM",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#052FAD"
+      },
+      {
+        "hex": "#6C7C8C"
+      }
+    ]
+  },
+  {
+    "id": "icloud",
+    "name": "iCloud",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#3693F3"
+      },
+      {
+        "hex": "#77B9F2"
+      }
+    ]
+  },
+  {
+    "id": "illustrator",
+    "name": "Illustrator",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#FF9A00"
+      },
+      {
+        "hex": "#330000"
+      }
+    ]
+  },
+  {
+    "id": "indesign",
+    "name": "InDesign",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#FF3366"
+      },
+      {
+        "hex": "#49021F"
+      }
+    ]
+  },
+  {
+    "id": "instagram",
+    "name": "Instagram",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#C13584"
+      },
+      {
+        "hex": "#F56040"
+      },
+      {
+        "hex": "#FCAF45"
+      },
+      {
+        "hex": "#5B51D8"
+      },
+      {
+        "hex": "#833AB4"
+      }
+    ]
+  },
+  {
+    "id": "intel",
+    "name": "Intel",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#0071C5"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "java",
+    "name": "Java",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#F89820"
+      },
+      {
+        "hex": "#5382A1"
+      }
+    ]
+  },
+  {
+    "id": "kindle",
+    "name": "Kindle",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#000000"
+      },
+      {
+        "hex": "#FF9900"
+      }
+    ]
+  },
+  {
+    "id": "lambda",
+    "name": "Lambda",
+    "category": "Cloud Computing",
+    "colors": [
+      {
+        "hex": "#FF9900"
+      },
+      {
+        "hex": "#D86613"
+      }
+    ]
+  },
+  {
+    "id": "lemon8",
+    "name": "Lemon8",
+    "category": "Chinese Tech Giants",
+    "colors": [
+      {
+        "hex": "#FFE033"
+      },
+      {
+        "hex": "#7ED321"
+      }
+    ]
+  },
+  {
+    "id": "lightroom",
+    "name": "Lightroom",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#31A8FF"
+      },
+      {
+        "hex": "#001E36"
+      }
+    ]
+  },
+  {
+    "id": "linkedin",
+    "name": "LinkedIn",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#0A66C2"
+      },
+      {
+        "hex": "#004182"
+      },
+      {
+        "hex": "#86C8EB"
+      }
+    ]
+  },
+  {
+    "id": "mario",
+    "name": "Mario",
+    "category": "Gaming & Entertainment",
+    "colors": [
+      {
+        "hex": "#E60012"
+      },
+      {
+        "hex": "#049CDB"
+      },
+      {
+        "hex": "#FBD000"
+      }
+    ]
+  },
+  {
+    "id": "messenger",
+    "name": "Messenger",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#0084FF"
+      },
+      {
+        "hex": "#7B4397"
+      },
+      {
+        "hex": "#FC466B"
+      }
+    ]
+  },
+  {
+    "id": "meta",
+    "name": "Meta",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#0866FF"
+      },
+      {
+        "hex": "#1877F2"
+      }
+    ]
+  },
+  {
+    "id": "microsoft",
+    "name": "Microsoft",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#F25022"
+      },
+      {
+        "hex": "#7FBA00"
+      },
+      {
+        "hex": "#00A4EF"
+      },
+      {
+        "hex": "#FFB900"
+      }
+    ]
+  },
+  {
+    "id": "mulesoft",
+    "name": "MuleSoft",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#00A2E2"
+      },
+      {
+        "hex": "#54585A"
+      }
+    ]
+  },
+  {
+    "id": "mysql",
+    "name": "MySQL",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#F29111"
+      },
+      {
+        "hex": "#00758F"
+      }
+    ]
+  },
+  {
+    "id": "nest",
+    "name": "Nest",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#00AFD7"
+      },
+      {
+        "hex": "#7FBA00"
+      }
+    ]
+  },
+  {
+    "id": "netflix",
+    "name": "Netflix",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#E50914"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "netflix-games",
+    "name": "Netflix Games",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#E50914"
+      },
+      {
+        "hex": "#5E0DAC"
+      }
+    ]
+  },
+  {
+    "id": "netflix-originals",
+    "name": "Netflix Originals",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#E50914"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "netsuite",
+    "name": "NetSuite",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#00A9E0"
+      },
+      {
+        "hex": "#697078"
+      }
+    ]
+  },
+  {
+    "id": "nintendo",
+    "name": "Nintendo",
+    "category": "Gaming & Entertainment",
+    "colors": [
+      {
+        "hex": "#E60012"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "nvidia",
+    "name": "NVIDIA",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#76B900"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "oculus",
+    "name": "Oculus",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#1C1E20"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "office",
+    "name": "Office",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#D83B01"
+      },
+      {
+        "hex": "#EA4300"
+      }
+    ]
+  },
+  {
+    "id": "omniverse",
+    "name": "Omniverse",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#76B900"
+      },
+      {
+        "hex": "#00A2E8"
+      }
+    ]
+  },
+  {
+    "id": "openai",
+    "name": "OpenAI",
+    "category": "AI & Machine Learning",
+    "colors": [
+      {
+        "hex": "#000000"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "optane",
+    "name": "Optane",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#00AEEF"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "oracle",
+    "name": "Oracle",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#F80000"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "outlook",
+    "name": "Outlook",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#0072C6"
+      },
+      {
+        "hex": "#40E0D0"
+      }
+    ]
+  },
+  {
+    "id": "palo-alto-networks",
+    "name": "Palo Alto Networks",
+    "category": "Cybersecurity",
+    "colors": [
+      {
+        "hex": "#FF8200"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "photoshop",
+    "name": "Photoshop",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#31A8FF"
+      },
+      {
+        "hex": "#001E36"
+      }
+    ]
+  },
+  {
+    "id": "playstation",
+    "name": "PlayStation",
+    "category": "Gaming & Entertainment",
+    "colors": [
+      {
+        "hex": "#003791"
+      },
+      {
+        "hex": "#00439C"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "playstation-now",
+    "name": "PlayStation Now",
+    "category": "Gaming & Entertainment",
+    "colors": [
+      {
+        "hex": "#FF6B00"
+      },
+      {
+        "hex": "#003791"
+      }
+    ]
+  },
+  {
+    "id": "playstation-plus",
+    "name": "PlayStation Plus",
+    "category": "Gaming & Entertainment",
+    "colors": [
+      {
+        "hex": "#FFD700"
+      },
+      {
+        "hex": "#003791"
+      }
+    ]
+  },
+  {
+    "id": "pokemon",
+    "name": "Pokemon",
+    "category": "Gaming & Entertainment",
+    "colors": [
+      {
+        "hex": "#FFCB05"
+      },
+      {
+        "hex": "#3466AF"
+      },
+      {
+        "hex": "#C1272D"
+      }
+    ]
+  },
+  {
+    "id": "premiere-pro",
+    "name": "Premiere Pro",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#9999FF"
+      },
+      {
+        "hex": "#00005B"
+      }
+    ]
+  },
+  {
+    "id": "prime",
+    "name": "Prime",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#00A8E1"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "prisma",
+    "name": "Prisma",
+    "category": "Cybersecurity",
+    "colors": [
+      {
+        "hex": "#0095D5"
+      },
+      {
+        "hex": "#00C0F0"
+      }
+    ]
+  },
+  {
+    "id": "qled",
+    "name": "QLED",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#C0C0C0"
+      },
+      {
+        "hex": "#0000FF"
+      }
+    ]
+  },
+  {
+    "id": "qq",
+    "name": "QQ",
+    "category": "Chinese Tech Giants",
+    "colors": [
+      {
+        "hex": "#EB1923"
+      },
+      {
+        "hex": "#FFDA44"
+      },
+      {
+        "hex": "#12B7F5"
+      }
+    ]
+  },
+  {
+    "id": "radeon",
+    "name": "Radeon",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#E30613"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "rds",
+    "name": "RDS",
+    "category": "Cloud Computing",
+    "colors": [
+      {
+        "hex": "#205081"
+      },
+      {
+        "hex": "#1B3A5F"
+      }
+    ]
+  },
+  {
+    "id": "red-hat",
+    "name": "Red Hat",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#EE0000"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "ring",
+    "name": "Ring",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#00A0E3"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "rtx",
+    "name": "RTX",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#76B900"
+      },
+      {
+        "hex": "#C0C0C0"
+      }
+    ]
+  },
+  {
+    "id": "ryzen",
+    "name": "Ryzen",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#F79E1B"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "s3",
+    "name": "S3",
+    "category": "Cloud Computing",
+    "colors": [
+      {
+        "hex": "#569A31"
+      },
+      {
+        "hex": "#3B6829"
+      }
+    ]
+  },
+  {
+    "id": "salesforce",
+    "name": "Salesforce",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#00A1E0"
+      },
+      {
+        "hex": "#1798C1"
+      }
+    ]
+  },
+  {
+    "id": "samsung-electronics",
+    "name": "Samsung Electronics",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#1428A0"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "shop-pay",
+    "name": "Shop Pay",
+    "category": "E-commerce & Digital Marketplaces",
+    "colors": [
+      {
+        "hex": "#5A31F4"
+      },
+      {
+        "hex": "#56FBB1"
+      }
+    ]
+  },
+  {
+    "id": "shopify",
+    "name": "Shopify",
+    "category": "E-commerce & Digital Marketplaces",
+    "colors": [
+      {
+        "hex": "#96BF48"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "shopify-plus",
+    "name": "Shopify Plus",
+    "category": "E-commerce & Digital Marketplaces",
+    "colors": [
+      {
+        "hex": "#FBB040"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "shopify-pos",
+    "name": "Shopify POS",
+    "category": "E-commerce & Digital Marketplaces",
+    "colors": [
+      {
+        "hex": "#008060"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "skype",
+    "name": "Skype",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#00AFF0"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "slack",
+    "name": "Slack",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#4A154B"
+      },
+      {
+        "hex": "#36C5F0"
+      },
+      {
+        "hex": "#2EB67D"
+      },
+      {
+        "hex": "#ECB22E"
+      },
+      {
+        "hex": "#E01E5A"
+      }
+    ]
+  },
+  {
+    "id": "smartthings",
+    "name": "SmartThings",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#15AABF"
+      },
+      {
+        "hex": "#40C057"
+      }
+    ]
+  },
+  {
+    "id": "sony-interactive",
+    "name": "Sony Interactive Entertainment",
+    "category": "Gaming & Entertainment",
+    "colors": [
+      {
+        "hex": "#000000"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "spotify",
+    "name": "Spotify",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#1DB954"
+      },
+      {
+        "hex": "#191414"
+      }
+    ]
+  },
+  {
+    "id": "spotify-for-artists",
+    "name": "Spotify for Artists",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#FF6B6B"
+      },
+      {
+        "hex": "#794BC4"
+      }
+    ]
+  },
+  {
+    "id": "spotify-kids",
+    "name": "Spotify Kids",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#FF6B35"
+      },
+      {
+        "hex": "#3A86FF"
+      },
+      {
+        "hex": "#FFD60A"
+      }
+    ]
+  },
+  {
+    "id": "spotify-podcasts",
+    "name": "Spotify Podcasts",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#8E44AD"
+      },
+      {
+        "hex": "#1DB954"
+      }
+    ]
+  },
+  {
+    "id": "switch",
+    "name": "Switch",
+    "category": "Gaming & Entertainment",
+    "colors": [
+      {
+        "hex": "#E60012"
+      },
+      {
+        "hex": "#0084FF"
+      }
+    ]
+  },
+  {
+    "id": "tableau",
+    "name": "Tableau",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#E97627"
+      },
+      {
+        "hex": "#5B879B"
+      },
+      {
+        "hex": "#C32E2E"
+      }
+    ]
+  },
+  {
+    "id": "teams",
+    "name": "Teams",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#6264A7"
+      },
+      {
+        "hex": "#8B8CC7"
+      }
+    ]
+  },
+  {
+    "id": "tencent",
+    "name": "Tencent",
+    "category": "Chinese Tech Giants",
+    "colors": [
+      {
+        "hex": "#0066CC"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "tencent-cloud",
+    "name": "Tencent Cloud",
+    "category": "Chinese Tech Giants",
+    "colors": [
+      {
+        "hex": "#006EFF"
+      },
+      {
+        "hex": "#00D4FF"
+      }
+    ]
+  },
+  {
+    "id": "tencent-games",
+    "name": "Tencent Games",
+    "category": "Chinese Tech Giants",
+    "colors": [
+      {
+        "hex": "#FF6900"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "threadripper",
+    "name": "Threadripper",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#FF6600"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "threads",
+    "name": "Threads",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#000000"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "tiktok",
+    "name": "TikTok",
+    "category": "Social Media & Digital Advertising",
+    "colors": [
+      {
+        "hex": "#000000"
+      },
+      {
+        "hex": "#FFFFFF"
+      },
+      {
+        "hex": "#FF0050"
+      },
+      {
+        "hex": "#00F2EA"
+      }
+    ]
+  },
+  {
+    "id": "tiktok-for-business",
+    "name": "TikTok for Business",
+    "category": "Social Media & Digital Advertising",
+    "colors": [
+      {
+        "hex": "#000000"
+      },
+      {
+        "hex": "#FF0050"
+      },
+      {
+        "hex": "#00F2EA"
+      }
+    ]
+  },
+  {
+    "id": "tiktok-shop",
+    "name": "TikTok Shop",
+    "category": "Social Media & Digital Advertising",
+    "colors": [
+      {
+        "hex": "#FE2C55"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "twitch",
+    "name": "Twitch",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#9146FF"
+      },
+      {
+        "hex": "#FFFFFF"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "uber",
+    "name": "Uber",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#000000"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "uber-eats",
+    "name": "Uber Eats",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#06C167"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "uber-for-business",
+    "name": "Uber for Business",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#146EF5"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "uber-freight",
+    "name": "Uber Freight",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#FF8C00"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "unreal-engine",
+    "name": "Unreal Engine",
+    "category": "Gaming & Entertainment",
+    "colors": [
+      {
+        "hex": "#000000"
+      },
+      {
+        "hex": "#FFFFFF"
+      },
+      {
+        "hex": "#0084FF"
+      }
+    ]
+  },
+  {
+    "id": "verizon",
+    "name": "Verizon",
+    "category": "Telecommunications",
+    "colors": [
+      {
+        "hex": "#EE0000"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "verizon-fios",
+    "name": "Verizon Fios",
+    "category": "Telecommunications",
+    "colors": [
+      {
+        "hex": "#EE0000"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "vertex-ai",
+    "name": "Vertex AI",
+    "category": "Cloud Computing",
+    "colors": [
+      {
+        "hex": "#FF6D00"
+      },
+      {
+        "hex": "#1A73E8"
+      }
+    ]
+  },
+  {
+    "id": "watson",
+    "name": "Watson",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#BE95FF"
+      },
+      {
+        "hex": "#4589FF"
+      },
+      {
+        "hex": "#08BDBA"
+      }
+    ]
+  },
+  {
+    "id": "waymo",
+    "name": "Waymo",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#00C7B7"
+      },
+      {
+        "hex": "#003D4F"
+      }
+    ]
+  },
+  {
+    "id": "wechat",
+    "name": "WeChat",
+    "category": "Chinese Tech Giants",
+    "colors": [
+      {
+        "hex": "#09BB07"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "whatsapp",
+    "name": "WhatsApp",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#25D366"
+      },
+      {
+        "hex": "#075E54"
+      },
+      {
+        "hex": "#DCF8C6"
+      }
+    ]
+  },
+  {
+    "id": "whole-foods",
+    "name": "Whole Foods",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#00674B"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "xbox",
+    "name": "Xbox",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#107C10"
+      },
+      {
+        "hex": "#5E5E5E"
+      },
+      {
+        "hex": "#000000"
+      }
+    ]
+  },
+  {
+    "id": "xd",
+    "name": "XD",
+    "category": "Enterprise Software",
+    "colors": [
+      {
+        "hex": "#FF61F6"
+      },
+      {
+        "hex": "#450135"
+      }
+    ]
+  },
+  {
+    "id": "xeon",
+    "name": "Xeon",
+    "category": "Semiconductors & Hardware",
+    "colors": [
+      {
+        "hex": "#0068B5"
+      },
+      {
+        "hex": "#8CC63F"
+      }
+    ]
+  },
+  {
+    "id": "yahoo",
+    "name": "Yahoo",
+    "category": "Telecommunications",
+    "colors": [
+      {
+        "hex": "#6001D2"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "youtube",
+    "name": "YouTube",
+    "category": "Big Tech / Platform Companies",
+    "colors": [
+      {
+        "hex": "#FF0000"
+      },
+      {
+        "hex": "#282828"
+      },
+      {
+        "hex": "#FFFFFF"
+      }
+    ]
+  },
+  {
+    "id": "zelda",
+    "name": "Zelda",
+    "category": "Gaming & Entertainment",
+    "colors": [
+      {
+        "hex": "#00A652"
+      },
+      {
+        "hex": "#FFD700"
+      }
+    ]
+  },
+  {
+    "id": "zoom",
+    "name": "Zoom",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#2D8CFF"
+      },
+      {
+        "hex": "#232333"
+      }
+    ]
+  },
+  {
+    "id": "zoom-phone",
+    "name": "Zoom Phone",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#FF742E"
+      },
+      {
+        "hex": "#2D8CFF"
+      }
+    ]
+  },
+  {
+    "id": "zoom-rooms",
+    "name": "Zoom Rooms",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#00D32F"
+      },
+      {
+        "hex": "#2D8CFF"
+      }
+    ]
+  },
+  {
+    "id": "zoom-webinar",
+    "name": "Zoom Webinar",
+    "category": "Other Notable Tech Companies",
+    "colors": [
+      {
+        "hex": "#7B52E0"
+      },
+      {
+        "hex": "#2D8CFF"
+      }
+    ]
+  }
+]

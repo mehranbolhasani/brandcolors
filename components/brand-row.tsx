@@ -55,7 +55,7 @@ export function BrandRowList({ brand, colorFormat, appearIndex = 0 }: BrandRowLi
               const ok = await copyToClipboard(value);
               if (ok) {
                 setCopiedIndex(i);
-                toast.success(`Copied ${value}`, { description: `${brand.name} - ${c.name}` });
+                toast.success(`Copied ${value}`, { description: brand.name });
                 setTimeout(() => setCopiedIndex(null), 1500);
               } else {
                 toast.error('Failed to copy color');
@@ -114,7 +114,7 @@ export function BrandRowCompact({ brand, colorFormat, appearIndex = 0 }: BrandRo
                   const value = formatColor(c.hex, colorFormat);
                   const ok = await copyToClipboard(value);
                   if (ok) {
-                    toast.success(`Copied ${value}`, { description: `${brand.name} - ${c.name}` });
+                    toast.success(`Copied ${value}`, { description: brand.name });
                   } else {
                     toast.error('Failed to copy color');
                   }
