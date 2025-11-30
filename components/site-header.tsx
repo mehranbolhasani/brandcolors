@@ -1,30 +1,45 @@
 'use client'
 
-import { FolderOpen } from 'lucide-react'
+import { FolderOpen, Download } from 'lucide-react'
 import { ColorFormatSelector } from './color-format-selector'
 import { ThemeToggle } from './theme-toggle'
 import { Button } from './ui/button'
 import { Heart } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from './ui/dropdown-menu'
 import { usePreferences } from '@/lib/store'
 import { Brand } from '@/lib/types'
 import { useState } from 'react'
+import { exportAsJSON, exportAsCSS, exportAsTailwind, exportAsSVG, downloadFile } from '@/lib/utils'
 
 import { ColorFormat } from '@/lib/types'
+
+import { motion } from "motion/react"
 
 interface SiteHeaderProps {
   colorFormat: ColorFormat
   onColorFormatChange: (format: ColorFormat) => void
   favorites: string[]
   brands: Brand[]
+  filteredBrands?: Brand[]
 }
 
-export function SiteHeader({ colorFormat, onColorFormatChange, favorites, brands }: SiteHeaderProps) {
+export function SiteHeader({ colorFormat, onColorFormatChange, favorites, brands, filteredBrands }: SiteHeaderProps) {
   const [showFavorites, setShowFavorites] = useState(false)
   const favoriteBrands = brands.filter(b => favorites.includes(b.id))
+  const brandsToExport = filteredBrands || brands
 
   return (
-    <header className="relative top-8 z-50 max-w-4xl mx-auto glass rounded-xl shadow-lg shadow-neutral-900/5">
+    <motion.header 
+    initial={{ transform: "translateY(-100px)" }}
+    animate={{ transform: "translateY(0px)" }}
+    transition={{ type: "spring", duration: 1, bounce: 0.25, ease: "easeInOut", delay: 0.7 }}
+    className="relative top-8 z-50 max-w-4xl mx-auto glass rounded-xl shadow-lg shadow-neutral-900/5">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Left: Icon + Title */}
@@ -35,9 +50,55 @@ export function SiteHeader({ colorFormat, onColorFormatChange, favorites, brands
             </h1>
           </div>
 
-          {/* Right: Color Format, Favorites, Theme Toggle */}
+          {/* Right: Color Format, Export, Favorites, Theme Toggle */}
           <div className="flex items-center gap-3">
             <ColorFormatSelector value={colorFormat} onChange={onColorFormatChange} />
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Export all brands"
+                >
+                  <Download className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onSelect={() => {
+                    const content = exportAsJSON(brandsToExport);
+                    downloadFile(content, 'brands.json', 'application/json');
+                  }}
+                >
+                  Download JSON
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    const content = exportAsCSS(brandsToExport);
+                    downloadFile(content, 'brands.css', 'text/css');
+                  }}
+                >
+                  Download CSS Variables
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    const content = exportAsTailwind(brandsToExport);
+                    downloadFile(content, 'brands.tailwind.js', 'application/javascript');
+                  }}
+                >
+                  Download Tailwind Theme
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    const content = exportAsSVG(brandsToExport);
+                    downloadFile(content, 'brands.svg', 'image/svg+xml');
+                  }}
+                >
+                  Download SVG Swatches
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             
             <Dialog open={showFavorites} onOpenChange={setShowFavorites}>
               <DialogTrigger asChild>
@@ -89,7 +150,7 @@ export function SiteHeader({ colorFormat, onColorFormatChange, favorites, brands
           </div>
         </div>
       </div>
-    </header>
+    </motion.header>
   )
 }
 

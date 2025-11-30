@@ -1,0 +1,710 @@
+---
+alwaysApply: true
+---
+
+# BrandColors Coding Rules & Best Practices
+
+This document outlines the coding standards, patterns, and best practices for the BrandColors project. Follow these rules to maintain consistency, performance, and code quality.
+
+## Table of Contents
+
+1. [Project Structure](#project-structure)
+2. [Component Patterns](#component-patterns)
+3. [Styling Conventions](#styling-conventions)
+4. [Performance Optimizations](#performance-optimizations)
+5. [Accessibility Requirements](#accessibility-requirements)
+6. [State Management](#state-management)
+7. [Animation Guidelines](#animation-guidelines)
+8. [TypeScript Conventions](#typescript-conventions)
+9. [Testing Standards](#testing-standards)
+10. [Code Organization](#code-organization)
+
+---
+
+## Project Structure
+
+### Directory Organization
+
+```
+brandcolors/
+├── app/                    # Next.js App Router pages
+│   ├── layout.tsx         # Root layout with providers
+│   ├── page.tsx           # Main page components
+│   └── globals.css        # Global styles and Tailwind
+├── components/            # React components
+│   ├── ui/                # shadcn/ui base components
+│   └── [feature].tsx      # Feature-specific components
+├── hooks/                 # Custom React hooks
+├── lib/                   # Utilities and shared logic
+│   ├── store.ts           # State management
+│   ├── utils.ts           # Utility functions
+│   └── types.ts           # TypeScript types
+└── __tests__/             # Test files
+```
+
+### File Naming Conventions
+
+- **Components**: Use PascalCase with descriptive names (e.g., `BrandCard.tsx`, `ColorSwatch.tsx`)
+- **Hooks**: Use camelCase with `use` prefix (e.g., `useBrandFilters.ts`, `useDebounce.ts`)
+- **Utilities**: Use camelCase (e.g., `utils.ts`, `constants.ts`)
+- **Types**: Use camelCase (e.g., `types.ts`)
+- **Tests**: Match source file name with `.test.ts` or `.test.tsx` suffix
+
+### Import Organization
+
+1. React and Next.js imports first
+2. Third-party library imports
+3. Internal component imports
+4. Utility and type imports
+5. Relative imports last
+
+```typescript
+// ✅ Good
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { gsap } from 'gsap';
+import { BrandCard } from '@/components/brand-card';
+import { useBrandFilters } from '@/hooks/useBrandFilters';
+import { Brand } from '@/lib/types';
+import { cn } from '@/lib/utils';
+```
+
+---
+
+## Component Patterns
+
+### Component Structure
+
+1. **Imports** (in order: React, Next.js, third-party, internal)
+2. **Type definitions** (interfaces, types)
+3. **Component function**
+4. **Hooks** (useState, useEffect, custom hooks)
+5. **Memoized values** (useMemo, useCallback)
+6. **Event handlers**
+7. **Effects** (useEffect, useLayoutEffect)
+8. **Render logic**
+
+```typescript
+// ✅ Good component structure
+import { useState, useEffect, useRef } from 'react';
+import { Brand } from '@/lib/types';
+import { cn } from '@/lib/utils';
+
+interface BrandCardProps {
+  brand: Brand;
+  colorFormat: ColorFormat;
+  layout?: LayoutMode;
+  appearIndex?: number;
+}
+
+export function BrandCard({ brand, colorFormat, layout = 'grid', appearIndex = 0 }: BrandCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  
+  // Hooks
+  const { colorFormat: prefFormat } = usePreferences();
+  
+  // Memoized values
+  const formattedColors = useMemo(() => {
+    return brand.colors.map(color => formatColor(color, colorFormat));
+  }, [brand.colors, colorFormat]);
+  
+  // Effects
+  useEffect(() => {
+    // Effect logic
+  }, []);
+  
+  // Render
+  return <div ref={rootRef}>...</div>;
+}
+```
+
+### Component Composition
+
+- **Extract reusable logic into custom hooks** when logic is shared or complex
+- **Split large components** into smaller, focused sub-components
+- **Use composition over configuration** - prefer children props over complex prop interfaces
+- **Memoize expensive components** with `React.memo` when appropriate
+
+```typescript
+// ✅ Extract complex logic to hooks
+const { filteredBrands, paginatedBrands, totalPages } = useBrandFilters({
+  brands,
+  itemsPerPage: 24,
+  searchQuery: debouncedSearchQuery,
+});
+
+// ✅ Split large components
+<BrandsFilters 
+  searchQuery={searchQuery}
+  selectedCategory={selectedCategory}
+  sortBy={sortBy}
+  onSearchChange={setSearchQuery}
+/>
+<BrandsSection brands={paginatedBrands} layout={layout} />
+<BrandsPagination 
+  currentPage={currentPage}
+  totalPages={totalPages}
+  onPageChange={setCurrentPage}
+/>
+```
+
+### Component Memoization
+
+Use `React.memo` for components that:
+- Receive props that don't change frequently
+- Are rendered in lists
+- Have expensive render logic
+
+```typescript
+// ✅ Memoize list items
+export const BrandCard = memo(function BrandCard({ brand, colorFormat }: BrandCardProps) {
+  // Component logic
+}, (prevProps, nextProps) => {
+  // Custom comparison function
+  return (
+    prevProps.brand.id === nextProps.brand.id &&
+    prevProps.colorFormat === nextProps.colorFormat
+  );
+});
+```
+
+### Dynamic Imports
+
+Use dynamic imports for:
+- Heavy components that aren't immediately visible
+- Components with large dependencies
+- Code splitting for better performance
+
+```typescript
+// ✅ Lazy load heavy components
+const LazyBrandCard = dynamic(() => import('@/components/brand-card').then(mod => ({ default: mod.BrandCard })), {
+  loading: () => <BrandCardSkeleton />,
+  ssr: false, // Disable SSR for performance
+});
+```
+
+---
+
+## Styling Conventions
+
+### Tailwind CSS Usage
+
+- **Use Tailwind utility classes** for all styling
+- **Prefer composition** over custom CSS when possible
+- **Use `cn()` utility** for conditional classes
+- **Follow mobile-first** responsive design patterns
+
+```typescript
+// ✅ Good: Use Tailwind utilities with cn()
+<div className={cn(
+  "flex items-center gap-3",
+  isActive && "bg-primary text-primary-foreground",
+  className
+)}>
+```
+
+### Custom CSS Classes
+
+Use custom utility classes defined in `globals.css`:
+- `.glass` - Glassmorphism effect
+- `.transition-smooth` - Smooth transitions
+- `.gradient-bg` - Gradient backgrounds
+- `.sr-only` - Screen reader only content
+
+```typescript
+// ✅ Use custom utility classes
+<Card className="glass transition-smooth">
+  <div className="sr-only">Accessible label</div>
+</Card>
+```
+
+### Dark Mode Support
+
+- **Always provide dark mode variants** for all components
+- **Use CSS variables** for theme-aware colors
+- **Test in both light and dark modes**
+
+```typescript
+// ✅ Good: Dark mode support
+<div className="bg-white dark:bg-card text-foreground">
+  <span className="text-muted-foreground dark:text-muted-foreground/80">
+    Content
+  </span>
+</div>
+```
+
+### Color Formatting
+
+- Use **OKLCH color space** for theme colors (better perceptual uniformity)
+- Use **CSS custom properties** for theme colors
+- Ensure **WCAG AA contrast compliance** (4.5:1 for normal text, 3:1 for large text)
+
+```css
+/* ✅ Good: OKLCH colors with proper contrast */
+:root {
+  --foreground: oklch(0.145 0 0);
+  --muted-foreground: oklch(0.45 0 0); /* WCAG AA compliant */
+}
+```
+
+---
+
+## Performance Optimizations
+
+### Debouncing
+
+- **Debounce search inputs** (300ms delay)
+- **Debounce scroll handlers** when needed
+- Use `useDebounce` hook for consistent debouncing
+
+```typescript
+// ✅ Debounce search input
+const debouncedSearchQuery = useDebounce(searchQueryInput, 300);
+```
+
+### Memoization
+
+- **Memoize expensive computations** with `useMemo`
+- **Memoize callbacks** with `useCallback` when passed to memoized children
+- **Memoize filtered/sorted arrays** to prevent recalculation
+
+```typescript
+// ✅ Memoize expensive operations
+const filteredBrands = useMemo(() => {
+  return brands
+    .filter(brand => brand.category === selectedCategory)
+    .sort((a, b) => a.name.localeCompare(b.name));
+}, [brands, selectedCategory]);
+```
+
+### Pagination Performance
+
+- **Skip animations on pagination** - animations should only run on initial load
+- **Use refs to track animation state** - prevent re-animation of already visible items
+- **Instant render on page changes** - use `gsap.set` instead of `gsap.fromTo` for pagination
+
+```typescript
+// ✅ Skip animations on pagination
+const hasAnimatedRef = useRef(false);
+
+useLayoutEffect(() => {
+  if (!rootRef.current) return;
+  
+  if (hasAnimatedRef.current || skipAnimation) {
+    // Instant render for pagination
+    gsap.set(rootRef.current, { autoAlpha: 1, y: 0 });
+    return;
+  }
+  
+  // Animate only on initial load
+  hasAnimatedRef.current = true;
+  gsap.fromTo(rootRef.current, { autoAlpha: 0, y: 4 }, { 
+    autoAlpha: 1, 
+    y: 0, 
+    duration: 0.2,
+    delay: Math.min(appearIndex * 0.04, 0.3), // Cap delay at 0.3s
+  });
+}, [appearIndex, skipAnimation]);
+```
+
+### Loading States
+
+- **Show loading skeletons** during data fetching
+- **Use loading states** for async operations
+- **Provide visual feedback** for user actions
+
+```typescript
+// ✅ Loading skeleton
+{isLoading ? (
+  <div className="grid grid-cols-3 gap-6">
+    {Array.from({ length: 24 }).map((_, i) => (
+      <BrandCardSkeleton key={i} />
+    ))}
+  </div>
+) : (
+  <BrandsSection brands={paginatedBrands} />
+)}
+```
+
+### URL Parameter Synchronization
+
+- **Sync filter state with URL params** for shareable URLs
+- **Read URL params on mount** to restore state
+- **Update URL without scroll** using `router.replace(url, { scroll: false })`
+
+```typescript
+// ✅ URL parameter sync
+useEffect(() => {
+  if (!mounted) return;
+  
+  const params = new URLSearchParams();
+  if (searchQuery) params.set('search', searchQuery);
+  if (selectedCategory) params.set('category', selectedCategory);
+  if (currentPage > 1) params.set('page', currentPage.toString());
+  
+  const newUrl = params.toString() ? `?${params.toString()}` : '/';
+  router.replace(newUrl, { scroll: false });
+}, [searchQuery, selectedCategory, currentPage, mounted, router]);
+```
+
+---
+
+## Accessibility Requirements
+
+### Keyboard Navigation
+
+- **All interactive elements must be keyboard accessible**
+- **Provide keyboard shortcuts** for common actions
+- **Implement focus management** for modals and dialogs
+- **Add skip-to-content link** for keyboard users
+
+```typescript
+// ✅ Keyboard shortcuts
+useEffect(() => {
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === '/' && document.activeElement?.tagName !== 'INPUT') {
+      event.preventDefault();
+      searchInputRef.current?.focus();
+    }
+    if (event.key === 'Escape') {
+      // Handle escape
+    }
+  };
+  window.addEventListener('keydown', handleKeyDown);
+  return () => window.removeEventListener('keydown', handleKeyDown);
+}, []);
+```
+
+### ARIA Labels
+
+- **Provide ARIA labels** for icon-only buttons
+- **Use semantic HTML** elements (button, nav, main, etc.)
+- **Add aria-describedby** for help text
+- **Use aria-live regions** for dynamic content updates
+
+```typescript
+// ✅ ARIA labels
+<button
+  aria-label="Toggle favorite"
+  aria-pressed={isFavorite}
+  onClick={handleToggle}
+>
+  <HeartIcon />
+</button>
+```
+
+### Color Contrast
+
+- **Meet WCAG AA standards**: 4.5:1 for normal text, 3:1 for large text
+- **Test color combinations** in both light and dark modes
+- **Use contrast checking utilities** when available
+
+```typescript
+// ✅ Contrast checking utility
+export function meetsWCAGAA(foreground: string, background: string): boolean {
+  const ratio = getContrastRatio(foreground, background);
+  return ratio >= 4.5; // WCAG AA standard
+}
+```
+
+### Screen Reader Support
+
+- **Use `.sr-only` class** for screen reader only content
+- **Provide descriptive alt text** for images
+- **Announce dynamic content changes** with aria-live
+
+```typescript
+// ✅ Screen reader support
+<span className="sr-only">Color copied to clipboard</span>
+<button aria-label={`Copy ${colorName} color`}>Copy</button>
+```
+
+---
+
+## State Management
+
+### Local State
+
+- **Use `useState`** for component-local state
+- **Use `useReducer`** for complex state logic
+- **Keep state as local as possible** - lift only when necessary
+
+### Global State
+
+- **Use `useSyncExternalStore`** for SSR-compatible global state
+- **Store preferences in localStorage** with proper SSR handling
+- **Provide server snapshot** for initial render
+
+```typescript
+// ✅ Global state with SSR support
+export function usePreferences() {
+  const subscribe = (cb: () => void) => subscribePreferences(cb);
+  const getSnapshot = () => getPreferences();
+  const getServerSnapshot = () => SERVER_SNAPSHOT;
+  const snapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  
+  return {
+    ...snapshot,
+    setColorFormat: setColorFormatPref,
+    toggleFavorite: toggleFavoritePref,
+  };
+}
+```
+
+### URL State
+
+- **Sync important state with URL params** for shareability
+- **Read URL params on mount** to restore state
+- **Update URL without causing navigation** using `router.replace`
+
+---
+
+## Animation Guidelines
+
+### GSAP Animations
+
+- **Use GSAP for complex animations** (staggered lists, sequences)
+- **Use CSS transitions** for simple hover/state changes
+- **Animate only on initial load** - skip animations on pagination/filtering
+- **Cap animation delays** to prevent long waits (max 0.3s)
+
+```typescript
+// ✅ GSAP animation pattern
+useLayoutEffect(() => {
+  if (!rootRef.current) return;
+  
+  if (hasAnimatedRef.current || skipAnimation) {
+    gsap.set(rootRef.current, { autoAlpha: 1, y: 0 });
+    return;
+  }
+  
+  hasAnimatedRef.current = true;
+  gsap.fromTo(
+    rootRef.current,
+    { autoAlpha: 0, y: 4 },
+    { 
+      autoAlpha: 1, 
+      y: 0, 
+      duration: 0.2,
+      ease: 'power2.out',
+      delay: Math.min(appearIndex * 0.04, 0.3),
+      overwrite: 'auto'
+    }
+  );
+}, [appearIndex, skipAnimation]);
+```
+
+### Animation Performance
+
+- **Use `useLayoutEffect`** for animations that affect layout
+- **Use `transform` and `opacity`** for performant animations
+- **Force GPU acceleration** with `transform: translateZ(0)` when needed
+- **Avoid animating layout properties** (width, height, top, left)
+
+```css
+/* ✅ GPU-accelerated animations */
+.is-stuck {
+  transform: translateZ(0); /* Force GPU acceleration */
+}
+```
+
+### Animation Timing
+
+- **Keep durations short** (0.15s - 0.3s for most interactions)
+- **Use easing functions** for natural motion (`power2.out`, `ease-out`)
+- **Stagger delays** for list animations (0.04s per item, capped at 0.3s)
+
+---
+
+## TypeScript Conventions
+
+### Type Definitions
+
+- **Define interfaces** for component props
+- **Use type aliases** for unions and intersections
+- **Export types** from a central `types.ts` file
+- **Use `as const`** for literal types
+
+```typescript
+// ✅ Type definitions
+export interface Brand {
+  id: string;
+  name: string;
+  category: string;
+  colors: string[];
+  tags?: string[];
+}
+
+export type ColorFormat = 'hex' | 'rgb' | 'hsl' | 'oklch';
+export type LayoutMode = 'grid' | 'list' | 'compact';
+export type SortOption = 'name' | 'category' | 'colors';
+```
+
+### Function Signatures
+
+- **Provide JSDoc comments** for complex functions
+- **Use explicit return types** for exported functions
+- **Use type parameters** for generic functions
+
+```typescript
+// ✅ Function with JSDoc
+/**
+ * Converts a HEX color string to RGB format
+ * @param hex - Hex color string (e.g., "#FF0000" or "FF0000")
+ * @returns RGB color string (e.g., "rgb(255, 0, 0)")
+ */
+export function hexToRgb(hex: string): string {
+  // Implementation
+}
+```
+
+### Strict Type Checking
+
+- **Enable strict mode** in `tsconfig.json`
+- **Avoid `any` types** - use `unknown` or proper types
+- **Use type guards** for runtime type checking
+- **Leverage TypeScript's type inference** when appropriate
+
+---
+
+## Testing Standards
+
+### Test Organization
+
+- **Match test file structure** to source file structure
+- **Use descriptive test names** that explain what is being tested
+- **Group related tests** with `describe` blocks
+
+```typescript
+// ✅ Test structure
+describe('hexToRgb', () => {
+  it('should convert valid hex color to rgb', () => {
+    expect(hexToRgb('#FF0000')).toBe('rgb(255, 0, 0)');
+  });
+  
+  it('should handle hex without hash', () => {
+    expect(hexToRgb('FF0000')).toBe('rgb(255, 0, 0)');
+  });
+  
+  it('should return original string for invalid hex', () => {
+    expect(hexToRgb('invalid')).toBe('invalid');
+  });
+});
+```
+
+### Component Testing
+
+- **Test user interactions** (clicks, keyboard events)
+- **Test accessibility** (ARIA attributes, keyboard navigation)
+- **Test edge cases** (empty states, loading states, errors)
+
+---
+
+## Code Organization
+
+### Custom Hooks
+
+- **Extract reusable logic** into custom hooks
+- **Return objects** from hooks for flexibility
+- **Provide JSDoc comments** for hook usage
+
+```typescript
+// ✅ Custom hook pattern
+/**
+ * Custom hook to manage brand filtering, sorting, and pagination
+ * @param options - Configuration options for the hook
+ * @returns Filtered and paginated brands along with control functions
+ */
+export function useBrandFilters({
+  brands,
+  itemsPerPage = 24,
+  searchQuery: externalSearchQuery,
+}: UseBrandFiltersOptions): UseBrandFiltersReturn {
+  // Hook implementation
+  return {
+    filteredBrands,
+    paginatedBrands,
+    totalPages,
+    // ... other values
+  };
+}
+```
+
+### Utility Functions
+
+- **Group related utilities** in the same file
+- **Use JSDoc comments** for complex functions
+- **Export functions** that are used in multiple places
+- **Keep utilities pure** (no side effects)
+
+### Constants
+
+- **Define constants** in a central `constants.ts` file
+- **Use `as const`** for literal types
+- **Group related constants** together
+
+```typescript
+// ✅ Constants pattern
+export const ANIMATION = {
+  CARD_APPEAR_DURATION: 0.2,
+  STAGGER_DELAY: 0.04,
+  MAX_STAGGER_DELAY: 0.3,
+} as const;
+```
+
+---
+
+## Common Patterns
+
+### Error Handling
+
+- **Handle errors gracefully** with try-catch blocks
+- **Provide user feedback** for errors (toasts, messages)
+- **Log errors** for debugging (in development)
+
+### Loading States
+
+- **Show loading indicators** for async operations
+- **Use skeletons** for content loading
+- **Handle empty states** appropriately
+
+### User Feedback
+
+- **Use toast notifications** for actions (Sonner)
+- **Provide visual feedback** for interactions
+- **Announce important changes** to screen readers
+
+---
+
+## Code Review Checklist
+
+Before submitting code, ensure:
+
+- [ ] Components are properly typed with TypeScript
+- [ ] Dark mode is supported for all new components
+- [ ] Accessibility requirements are met (keyboard nav, ARIA labels, contrast)
+- [ ] Performance optimizations are applied (memoization, debouncing)
+- [ ] Animations are skipped on pagination/filtering
+- [ ] Loading states are handled appropriately
+- [ ] URL parameters are synced for shareable state
+- [ ] Code follows the project structure and naming conventions
+- [ ] JSDoc comments are added for complex functions
+- [ ] Tests are added/updated for new functionality
+
+---
+
+## Additional Resources
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [React Documentation](https://react.dev)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [shadcn/ui Components](https://ui.shadcn.com)
+- [GSAP Documentation](https://greensock.com/docs/)
+- [WCAG Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
+
+---
+
+**Last Updated**: Based on codebase state as of current implementation
+**Maintained By**: Development Team
+

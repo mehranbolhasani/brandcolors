@@ -154,6 +154,32 @@ export function getTextColorForBackground(hex: string): string {
   return isBright(hex) ? '#000000' : '#FFFFFF';
 }
 
+/**
+ * Calculates the contrast ratio between two colors (WCAG standard)
+ * @param color1 - First color hex string
+ * @param color2 - Second color hex string
+ * @returns Contrast ratio (1.0 to 21.0, where 4.5+ meets WCAG AA for normal text, 3.0+ for large text)
+ */
+export function getContrastRatio(color1: string, color2: string): number {
+  const lum1 = getLuminance(color1);
+  const lum2 = getLuminance(color2);
+  const lighter = Math.max(lum1, lum2);
+  const darker = Math.min(lum1, lum2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/**
+ * Checks if contrast ratio meets WCAG AA standards
+ * @param foreground - Foreground color hex string
+ * @param background - Background color hex string
+ * @param isLargeText - Whether the text is large (18pt+ or 14pt+ bold)
+ * @returns True if contrast meets WCAG AA (4.5:1 for normal, 3:1 for large)
+ */
+export function meetsWCAGAA(foreground: string, background: string, isLargeText: boolean = false): boolean {
+  const ratio = getContrastRatio(foreground, background);
+  return isLargeText ? ratio >= 3.0 : ratio >= 4.5;
+}
+
 // ============================================
 // Clipboard Functions
 // ============================================

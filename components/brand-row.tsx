@@ -6,7 +6,7 @@ import { BrandLogo } from './brand-logo';
 import { Button } from '@/components/ui/button';
 import { Heart, Copy, Check } from 'lucide-react';
 import { formatColor, copyToClipboard, getTextColorForBackground, isVeryBright } from '@/lib/utils';
-import { useState, useLayoutEffect, useRef } from 'react';
+import { useState, useLayoutEffect, useRef, memo } from 'react';
 import { gsap } from 'gsap';
 import { toast } from 'sonner';
 
@@ -14,21 +14,31 @@ interface BrandRowListProps {
   brand: Brand;
   colorFormat: ColorFormat;
   appearIndex?: number;
+  skipAnimation?: boolean;
 }
 
-export function BrandRowList({ brand, colorFormat, appearIndex = 0 }: BrandRowListProps) {
+export const BrandRowList = memo(function BrandRowList({ brand, colorFormat, appearIndex = 0, skipAnimation = false }: BrandRowListProps) {
   const { favorites, toggleFavorite } = usePreferences();
   const favorite = favorites.includes(brand.id);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+
   useLayoutEffect(() => {
     if (!rootRef.current) return;
+    
+    // Skip animations on pagination for instant rendering
+    if (skipAnimation) {
+      gsap.set(rootRef.current, { autoAlpha: 1, y: 0 });
+      return;
+    }
+    
+    // Only animate on initial load
     gsap.fromTo(
       rootRef.current,
       { autoAlpha: 0, y: 4 },
-      { autoAlpha: 1, y: 0, duration: 0.18, ease: 'power2.out', delay: appearIndex * 0.04, overwrite: 'auto' }
+      { autoAlpha: 1, y: 0, duration: 0.18, ease: 'power2.out', delay: Math.min(appearIndex * 0.04, 0.3), overwrite: 'auto' }
     );
-  }, [appearIndex]);
+  }, [appearIndex, skipAnimation]);
 
   return (
     <div ref={rootRef} className="flex flex-col items-start justify-between px-4 py-6 glass gap-6 border-t-0! border-l-0! border-r-0! border-b! border-slate-300!">
@@ -72,26 +82,41 @@ export function BrandRowList({ brand, colorFormat, appearIndex = 0 }: BrandRowLi
       </div>
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  return (
+    prevProps.brand.id === nextProps.brand.id &&
+    prevProps.colorFormat === nextProps.colorFormat
+  );
+});
 
 interface BrandRowCompactProps {
   brand: Brand;
   colorFormat: ColorFormat;
   appearIndex?: number;
+  skipAnimation?: boolean;
 }
 
-export function BrandRowCompact({ brand, colorFormat, appearIndex = 0 }: BrandRowCompactProps) {
+export const BrandRowCompact = memo(function BrandRowCompact({ brand, colorFormat, appearIndex = 0, skipAnimation = false }: BrandRowCompactProps) {
   const { favorites, toggleFavorite } = usePreferences();
   const favorite = favorites.includes(brand.id);
   const rootRef = useRef<HTMLDivElement>(null);
+
   useLayoutEffect(() => {
     if (!rootRef.current) return;
+    
+    // Skip animations on pagination for instant rendering
+    if (skipAnimation) {
+      gsap.set(rootRef.current, { autoAlpha: 1, y: 0 });
+      return;
+    }
+    
+    // Only animate on initial load
     gsap.fromTo(
       rootRef.current,
       { autoAlpha: 0, y: 4 },
-      { autoAlpha: 1, y: 0, duration: 0.18, ease: 'power2.out', delay: appearIndex * 0.04, overwrite: 'auto' }
+      { autoAlpha: 1, y: 0, duration: 0.18, ease: 'power2.out', delay: Math.min(appearIndex * 0.04, 0.3), overwrite: 'auto' }
     );
-  }, [appearIndex]);
+  }, [appearIndex, skipAnimation]);
 
   return (
     <div ref={rootRef} className="flex flex-col px-4 py-4 glass">
@@ -133,4 +158,9 @@ export function BrandRowCompact({ brand, colorFormat, appearIndex = 0 }: BrandRo
       </div>
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  return (
+    prevProps.brand.id === nextProps.brand.id &&
+    prevProps.colorFormat === nextProps.colorFormat
+  );
+});
